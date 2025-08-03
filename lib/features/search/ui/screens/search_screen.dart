@@ -54,20 +54,75 @@ class _SearchScreenState extends State<SearchScreen> {
     final textTheme = AppTextTheme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: _buildSearchField(colorTheme, textTheme),
-      ),
-      body: ValueListenableBuilder<SearchState>(
-        valueListenable: widget.wm.stateNotifier,
-        builder: (context, state, _) {
-          return switch (state) {
-            SearchStateInitial() => _buildInitialState(colorTheme, textTheme),
-            SearchStateLoading() => _buildLoadingState(),
-            SearchStateEmpty() => _buildEmptyState(colorTheme, textTheme),
-            SearchStateError(:final message) => _buildErrorState(message, colorTheme, textTheme),
-            SearchStateResults(:final places) => _buildResults(places, colorTheme, textTheme),
-          };
-        },
+      appBar: AppBar(title: Center(child: Text(AppStrings.placesScreenAppBarTitle),),),
+      body: Column(
+        children: [
+          GestureDetector(
+            onTap: () {},
+            child: Container(
+              height: 50,
+              width: double.infinity,
+              margin: EdgeInsets.only(left: 16, right: 16),
+              decoration: BoxDecoration(
+                color: colorTheme.background,
+                borderRadius: const BorderRadius.all(Radius.circular(12)),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    flex: 1,
+                    child: Container(
+                      margin: EdgeInsets.only(left: 16, right: 16),
+                      child: SvgPictureWidget(AppSvgIcons.icSearch),
+                    ),
+                  ),
+                  Flexible(
+                    flex: 5,
+                    child: _buildSearchField(colorTheme, textTheme),
+                  ),
+                  Flexible(
+                    flex: 1,
+                    child: IconButton(
+                      icon: SvgPictureWidget(
+                        AppSvgIcons.icClear,
+                        color: colorTheme.accent,
+                      ),
+                      onPressed: () {
+                        _searchController.clear();
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: ValueListenableBuilder<SearchState>(
+              valueListenable: widget.wm.stateNotifier,
+              builder: (context, state, _) {
+                return switch (state) {
+                  SearchStateInitial() => _buildInitialState(
+                    colorTheme,
+                    textTheme,
+                  ),
+                  SearchStateLoading() => _buildLoadingState(),
+                  SearchStateEmpty() => _buildEmptyState(colorTheme, textTheme),
+                  SearchStateError(:final message) => _buildErrorState(
+                    message,
+                    colorTheme,
+                    textTheme,
+                  ),
+                  SearchStateResults(:final places) => _buildResults(
+                    places,
+                    colorTheme,
+                    textTheme,
+                  ),
+                };
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -79,21 +134,10 @@ class _SearchScreenState extends State<SearchScreen> {
       autofocus: true,
       decoration: InputDecoration(
         hintText: AppStrings.searchHint,
-        hintStyle: textTheme.text.copyWith(color: colorTheme.textSecondaryVariant),
+        hintStyle: textTheme.text.copyWith(
+          color: colorTheme.textSecondaryVariant,
+        ),
         border: InputBorder.none,
-        prefixIcon: Icon(Icons.search, color: colorTheme.textSecondary),
-        suffixIcon: _searchController.text.isNotEmpty
-            ? IconButton(
-                icon: SvgPictureWidget(
-                  AppSvgIcons.icClear,
-                  color: colorTheme.textSecondary,
-                ),
-                onPressed: () {
-                  _searchController.clear();
-                  _focusNode.requestFocus();
-                },
-              )
-            : null,
       ),
       style: textTheme.text.copyWith(color: colorTheme.textPrimary),
     );
@@ -118,7 +162,9 @@ class _SearchScreenState extends State<SearchScreen> {
           const SizedBox(height: 8),
           Text(
             AppStrings.searchInitialDescription,
-            style: textTheme.small.copyWith(color: colorTheme.textSecondaryVariant),
+            style: textTheme.small.copyWith(
+              color: colorTheme.textSecondaryVariant,
+            ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -149,7 +195,9 @@ class _SearchScreenState extends State<SearchScreen> {
           const SizedBox(height: 8),
           Text(
             AppStrings.searchEmptyDescription,
-            style: textTheme.small.copyWith(color: colorTheme.textSecondaryVariant),
+            style: textTheme.small.copyWith(
+              color: colorTheme.textSecondaryVariant,
+            ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -157,7 +205,11 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  Widget _buildErrorState(String message, AppColorTheme colorTheme, AppTextTheme textTheme) {
+  Widget _buildErrorState(
+    String message,
+    AppColorTheme colorTheme,
+    AppTextTheme textTheme,
+  ) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -184,7 +236,11 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  Widget _buildResults(List<PlaceEntity> places, AppColorTheme colorTheme, AppTextTheme textTheme) {
+  Widget _buildResults(
+    List<PlaceEntity> places,
+    AppColorTheme colorTheme,
+    AppTextTheme textTheme,
+  ) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: places.length,
@@ -193,22 +249,33 @@ class _SearchScreenState extends State<SearchScreen> {
         return Card(
           margin: const EdgeInsets.only(bottom: 16),
           child: ListTile(
-            leading: place.images.isNotEmpty
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      place.images.first,
-                      width: 56,
-                      height: 56,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Icon(Icons.photo, size: 56, color: colorTheme.inactive),
-                    ),
-                  )
-                : Icon(Icons.photo, size: 56, color: colorTheme.inactive),
-            title: Text(place.name, style: textTheme.text.copyWith(color: colorTheme.textPrimary)),
+            leading:
+                place.images.isNotEmpty
+                    ? ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(
+                        place.images.first,
+                        width: 56,
+                        height: 56,
+                        fit: BoxFit.cover,
+                        errorBuilder:
+                            (_, __, ___) => Icon(
+                              Icons.photo,
+                              size: 56,
+                              color: colorTheme.inactive,
+                            ),
+                      ),
+                    )
+                    : Icon(Icons.photo, size: 56, color: colorTheme.inactive),
+            title: Text(
+              place.name,
+              style: textTheme.text.copyWith(color: colorTheme.textPrimary),
+            ),
             subtitle: Text(
               place.placeType.name.toLowerCase(),
-              style: textTheme.small.copyWith(color: colorTheme.textSecondaryVariant),
+              style: textTheme.small.copyWith(
+                color: colorTheme.textSecondaryVariant,
+              ),
             ),
             onTap: () => _navigateToPlaceDetail(place),
           ),

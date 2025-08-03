@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:surf_places/assets/images/app_svg_icons.dart';
 import 'package:surf_places/assets/strings/app_strings.dart';
+import 'package:surf_places/features/filter/ui/filter_screen.dart';
 import 'package:surf_places/features/places/domain/enitites/places_state.dart';
 import 'package:surf_places/features/places/ui/screens/places_wm.dart';
 import 'package:surf_places/features/places/ui/widgets/place_card_widget.dart';
@@ -44,39 +45,46 @@ class PlacesScreen extends StatelessWidget {
                     );
                   },
                   child: Container(
-                    height: 40,
+                    height: 50,
                     width: double.infinity,
                     margin: EdgeInsets.only(left: 16, right: 16),
                     decoration: BoxDecoration(
                       color: colorTheme.background,
                       borderRadius: const BorderRadius.all(Radius.circular(12)),
                     ),
-                    child: Stack(
-                      alignment: AlignmentGeometry.directional(0, 0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Positioned(
-                          right: 0,
+                        Flexible(
+                          flex: 1,
+                          child: Container(
+                            margin: EdgeInsets.only(left: 16, right: 16),
+                            child: SvgPictureWidget(AppSvgIcons.icSearch),
+                          ),
+                        ),
+                        Flexible(
+                          flex: 5,
+                          child: Align(
+                            alignment: AlignmentDirectional.centerStart,
+                            child: Container(
+                              child: Text(AppStrings.searchHint),
+                            ),
+                          ),
+                        ),
+                        Flexible(
+                          flex: 1,
                           child: IconButton(
                             icon: SvgPictureWidget(
                               AppSvgIcons.icFilter,
                               color: colorTheme.accent,
                             ),
-                            onPressed: () {},
-                          ),
-                        ),
-                        Positioned(
-                          left: 0,
-                          child: Row(
-                            children: [
-                              Container(
-                                margin: EdgeInsets.only(left: 8),
-                                child: SvgPictureWidget(AppSvgIcons.icSearch),
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(left: 8),
-                                child: Text(AppStrings.searchHint),
-                              ),
-                            ],
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => const FilterScreen(),
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ],

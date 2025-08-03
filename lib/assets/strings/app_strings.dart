@@ -47,8 +47,20 @@ abstract class AppStrings {
 
   static const searchHint = 'Поиск мест...';
   static const searchInitialTitle = 'Начните поиск';
-  static const searchInitialDescription = 'Введите минимум 3 символа для поиска мест';
+  static const searchInitialDescription =
+      'Введите минимум 3 символа для поиска мест';
   static const searchEmptyTitle = 'Ничего не найдено';
   static const searchEmptyDescription = 'Попробуйте изменить параметры поиска';
   static const searchErrorTitle = 'Ошибка поиска';
+
+  static const hotel = 'Отель';
+  static const restaurant = 'Ресторан';
+  static const other = 'Другое';
+  static const park = 'Парк';
+  static const museum = 'Музей';
+  static const cafe = 'Кафе';
+
+  static const categories = 'Категории';
+  static const showResults = 'ПОКАЗАТЬ';
+  static const distance = 'Расстояние';
 }

@@ -11,9 +11,11 @@ class PlacesModel implements IPlacesModel {
   final IPlacesRepository _placesRepository;
   final IFavoritesRepository _favoritesRepository;
 
-  PlacesModel({required IPlacesRepository placesRepository, required IFavoritesRepository favoritesRepository})
-    : _placesRepository = placesRepository,
-      _favoritesRepository = favoritesRepository {
+  PlacesModel({
+    required IPlacesRepository placesRepository,
+    required IFavoritesRepository favoritesRepository,
+  }) : _placesRepository = placesRepository,
+       _favoritesRepository = favoritesRepository {
     // listen to favorites changes to update state.
     _favoritesRepository.favoritesListenable.addListener(_onFavoritesChanged);
   }
@@ -26,23 +28,53 @@ class PlacesModel implements IPlacesModel {
   ValueListenable<PlacesState> get placesStateListenable => _placesState;
 
   @override
-  void dispose() {
-    _favoritesRepository.favoritesListenable.removeListener(_onFavoritesChanged);
-    _placesState.dispose();
+  Future<void> getPlaces() async {
+    _placesState.value = const PlacesStateLoading();
+
+    try {
+      final placesResult = await _placesRepository.getPlaces();
+      switch (placesResult) {
+        case ResultOk(:final data):
+          _cachedRemotePlaces = data;
+          _updateCombinedPlaces();
+        case ResultFailed(:final error):
+          // Even if there's an error, we might have cached data
+          final cachedPlaces = await _placesRepository.getPlaces();
+          if (cachedPlaces.isFailed) {
+            _cachedRemotePlaces = cachedPlaces as List<PlaceEntity>?;
+            _updateCombinedPlaces();
+          } else {
+            _placesState.value = PlacesStateFailure(error);
+          }
+      }
+    } catch (e) {
+      // Handle any other errors
+      // _placesState.value = PlacesStateFailure(
+      //   UnknownFailure(message: e.toString()),
+      // );
+    }
   }
 
   @override
-  Future<void> getPlaces() async {
-    _placesState.value = const PlacesStateLoading();
-    final placesResult = await _placesRepository.getPlaces();
-    switch (placesResult) {
-      case ResultOk(:final data):
-        _cachedRemotePlaces = data;
-        _updateCombinedPlaces();
-      case ResultFailed(:final error):
-        _placesState.value = PlacesStateFailure(error);
-    }
+  void dispose() {
+    _favoritesRepository.favoritesListenable.removeListener(
+      _onFavoritesChanged,
+    );
+    _placesState.dispose();
   }
+
+  // @override
+  // Future<void> getPlaces() async {
+  //   _placesState.value = const PlacesStateLoading();
+  //   final placesResult = await _placesRepository.getPlaces();
+  //   switch (placesResult) {
+  //     case ResultOk(:final data):
+  //       _cachedRemotePlaces = data;
+  //       _updateCombinedPlaces();
+  //     case ResultFailed(:final error):
+  //       _placesState.value = PlacesStateFailure(error);
+  //   }
+  // }
 
   void _onFavoritesChanged() {
     _updateCombinedPlaces();
@@ -55,14 +87,20 @@ class PlacesModel implements IPlacesModel {
     final favorites = _favoritesRepository.favoritesListenable.value;
     final combined =
         remote
-            .map((place) => LikedPlaceEntity(place: place, isFavorite: favorites.any((f) => f.name == place.name)))
+            .map(
+              (place) => LikedPlaceEntity(
+                place: place,
+                isFavorite: favorites.any((f) => f.name == place.name),
+              ),
+            )
             .toList();
 
     _placesState.value = PlacesStateData(combined);
   }
 
   @override
-  ValueListenable<List<PlaceEntity>> get favoritesPlaces => _favoritesRepository.favoritesListenable;
+  ValueListenable<List<PlaceEntity>> get favoritesPlaces =>
+      _favoritesRepository.favoritesListenable;
 }
 
 /// Интерфейс модели для экрана мест.

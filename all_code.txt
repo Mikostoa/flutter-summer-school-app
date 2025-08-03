@@ -645,6 +645,68 @@ abstract base class ConverterToAndFrom<TResult, TFrom> {
 
 
 ================================================================================
+File: D:\Program Files\development\new_app_2\lib\core\data\database\database_helper.dart
+================================================================================
+
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
+
+class DatabaseHelper {
+  static const _databaseName = 'places_database.db';
+  static const _databaseVersion = 1;
+
+  // Singleton pattern
+  DatabaseHelper._privateConstructor();
+  static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
+
+  static Database? _database;
+  Future<Database> get database async {
+    if (_database != null) return _database!;
+    _database = await _initDatabase();
+    return _database!;
+  }
+
+  Future<Database> _initDatabase() async {
+    final documentsDirectory = await getApplicationDocumentsDirectory();
+    final path = join(documentsDirectory.path, _databaseName);
+    return await openDatabase(
+      path,
+      version: _databaseVersion,
+      onCreate: _onCreate,
+    );
+  }
+
+  Future<void> _onCreate(Database db, int version) async {
+    await db.execute('''
+      CREATE TABLE places (
+        id INTEGER PRIMARY KEY,
+        name TEXT NOT NULL,
+        description TEXT NOT NULL,
+        placeType TEXT NOT NULL,
+        lat REAL NOT NULL,
+        lon REAL NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE place_images (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        placeId INTEGER NOT NULL,
+        url TEXT NOT NULL,
+        FOREIGN KEY (placeId) REFERENCES places (id) ON DELETE CASCADE
+      )
+    ''');
+  }
+
+  Future<void> clearDatabase() async {
+    final db = await database;
+    await db.delete('places');
+    await db.delete('place_images');
+  }
+}
+
+================================================================================
 File: D:\Program Files\development\new_app_2\lib\core\data\repositories\base_repository.dart
 ================================================================================
 
@@ -1006,12 +1068,11 @@ final class ResultFailed<TData, TErr extends Object> extends Result<TData, TErr>
 File: D:\Program Files\development\new_app_2\lib\features\app\app.dart
 ================================================================================
 
-// lib/features/app/app.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:surf_places/features/app/app_home.dart';
 import 'package:surf_places/features/app/di/app_dependencies.dart';
-import 'package:surf_places/features/settings/model/settings_model.dart';
+import 'package:surf_places/features/settings/ui/settings_model.dart';
 import 'package:surf_places/uikit/themes/app_theme_data.dart';
 
 class App extends StatelessWidget {
@@ -1046,10 +1107,12 @@ File: D:\Program Files\development\new_app_2\lib\features\app\app_home.dart
 ================================================================================
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:surf_places/features/onboarding/ui/screens/onboarding_model.dart'; // Импортируем модель
+import 'package:surf_places/core/domain/entities/result/result.dart';
+import 'package:surf_places/features/onboarding/domain/onboarding_state.dart';
+import 'package:surf_places/features/onboarding/domain/repositories/i_onboarding_repository.dart';
 import 'package:surf_places/features/onboarding/ui/screens/onboarding_screen_builder.dart';
-import 'package:surf_places/features/tabs_screen/tabs_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:surf_places/features/splash/ui/screens/splash_screen.dart';
 
 /// Виджет, определяющий начальный экран приложения.
 class AppHome extends StatefulWidget {
@@ -1060,52 +1123,54 @@ class AppHome extends StatefulWidget {
 }
 
 class _AppHomeState extends State<AppHome> {
-  late Future<bool> _onboardingCompletedFuture;
+  late Future<OnboardingCheckState> _onboardingCheckFuture;
 
   @override
   void initState() {
     super.initState();
-    // Инициируем проверку завершения онбоардинга
-    _onboardingCompletedFuture = _checkOnboarding();
+    _onboardingCheckFuture = _checkOnboarding();
   }
 
-  /// Проверяет, был ли онбоардинг завершен.
-  Future<bool> _checkOnboarding() async {
-    // Создаем временную модель для проверки
-    // В идеале это должно делаться через отдельный сервис или репозиторий
-    // Но для простоты создаем экземпляр модели здесь
-    final model = OnboardingModel();
-    final isCompleted = await model.isOnboardingCompleted();
-    model.dispose(); // Не забываем освободить ресурсы
-    return isCompleted;
+  Future<OnboardingCheckState> _checkOnboarding() async {
+    final repository = context.read<IOnboardingRepository>();
+    final result = await repository.isOnboardingCompleted();
+
+    return switch (result) {
+      ResultOk(:final data) => OnboardingCheckStateData(data),
+      ResultFailed(:final error) => OnboardingCheckStateFailure(error),
+    };
   }
+
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<bool>(
-      future: _onboardingCompletedFuture,
+    return FutureBuilder<OnboardingCheckState>(
+      future: _onboardingCheckFuture,
       builder: (context, snapshot) {
-        // Пока проверяется состояние онбоардинга, показываем загрузку или пустой контейнер
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          // Можно показать SplashScreen или просто пустой контейнер
-          return const Scaffold(body: Center(child: CircularProgressIndicator()));
-        } else if (snapshot.hasError) {
-            // Обработка ошибки, если она возникла при проверке
-            // Можно залогировать и показать экран по умолчанию или онбоардинг
-            // Пока просто покажем онбоардинг
-            return const OnboardingScreenBuilder();
-        } else {
-          // Если проверка завершена успешно
-          final isCompleted = snapshot.data ?? false;
-          if (isCompleted) {
-            // Онбоардинг завершен, показываем основной экран
-            return const TabsScreen();
-          } else {
-            // Онбоардинг не завершен, показываем онбоардинг
-            return const OnboardingScreenBuilder();
-          }
-        }
+        final state = snapshot.data;
+
+        return switch (state) {
+          OnboardingCheckStateLoading() => const _LoadingState(),
+          OnboardingCheckStateFailure() => const OnboardingScreenBuilder(), 
+          OnboardingCheckStateData(isOnboardingCompleted: final isCompleted) =>
+            isCompleted ? const SplashScreen() : const OnboardingScreenBuilder(),
+          _ => const _LoadingState(), 
+        };
       },
+    );
+  }
+}
+
+/// Виджет состояния загрузки
+class _LoadingState extends StatelessWidget {
+  const _LoadingState();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(),
+      ),
     );
   }
 }
@@ -1118,13 +1183,17 @@ import 'package:dio/dio.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:surf_places/api/service/api_client.dart';
+import 'package:surf_places/core/data/database/database_helper.dart';
 import 'package:surf_places/features/common/data/converters/place_converter.dart';
 import 'package:surf_places/features/common/data/converters/place_type_converter.dart';
 import 'package:surf_places/features/common/data/repositories/favorites_repository.dart';
 import 'package:surf_places/features/common/domain/repositories/i_favorites_repository.dart';
+import 'package:surf_places/features/onboarding/data/repositories/onboarding_repository.dart';
+import 'package:surf_places/features/onboarding/domain/repositories/i_onboarding_repository.dart';
+import 'package:surf_places/features/places/data/repositories/place_database_repository.dart';
 import 'package:surf_places/features/places/data/repositories/places_repository.dart';
 import 'package:surf_places/features/places/domain/reposiotries/i_places_repository.dart';
-import 'package:surf_places/features/settings/model/settings_model.dart';
+import 'package:surf_places/features/settings/ui/settings_model.dart';
 
 /// Класс с зависимостями приложения.
 abstract class AppDependencies {
@@ -1141,19 +1210,29 @@ abstract class AppDependencies {
 
     final apiClient = ApiClient(dio);
 
-    final placeTypeConverter = PlaceTypeDtoToEntityConverter();
-    final placeConverter = PlaceDtoToEntityConverter(placeTypeConverter: placeTypeConverter);
-
     return [
-      Provider<IPlacesRepository>(
-        create: (_) => PlacesRepository(
-          apiClient: apiClient,
-          placeDtoToEntityConverter: placeConverter,
-        ),
+      Provider<IOnboardingRepository>(
+        create: (_) => const OnboardingRepository(),
       ),
       Provider<ApiClient>(create: (_) => apiClient),
       Provider<IFavoritesRepository>(create: (_) => FavoritesRepository()),
       Provider<ISettingsModel>(create: (_) => SettingsModel()),
+      Provider<DatabaseHelper>(create: (_) => DatabaseHelper.instance),
+      Provider<PlaceDatabaseRepository>(
+        create:
+            (context) =>
+                PlaceDatabaseRepository(context.read<DatabaseHelper>()),
+      ),
+      Provider<IPlacesRepository>(
+        create:
+            (context) => PlacesRepository(
+              apiClient: context.read<ApiClient>(),
+              placeDtoToEntityConverter: PlaceDtoToEntityConverter(
+                placeTypeConverter: PlaceTypeDtoToEntityConverter(),
+              ),
+              placeDatabaseRepository: context.read<PlaceDatabaseRepository>(),
+            ),
+      ),
     ];
   }
 }
@@ -1245,7 +1324,8 @@ final class FavoritesRepository implements IFavoritesRepository {
   FavoritesRepository();
 
   @override
-  ValueListenable<List<PlaceEntity>> get favoritesListenable => _favoritesListenable;
+  ValueListenable<List<PlaceEntity>> get favoritesListenable =>
+      _favoritesListenable;
 
   @override
   Future<void> fetchFavorites() async {
@@ -1264,10 +1344,8 @@ final class FavoritesRepository implements IFavoritesRepository {
     final index = favorites.indexWhere((element) => element.name == place.name);
 
     if (index == -1) {
-      // Добавляем в избранное
       _favoritesListenable.value = [...favorites, place];
     } else {
-      // Удаляем из избранного
       final newFavorites = [...favorites]..removeAt(index);
       _favoritesListenable.value = newFavorites;
     }
@@ -1404,7 +1482,6 @@ abstract interface class IFavoritesRepository {
 File: D:\Program Files\development\new_app_2\lib\features\favorites\ui\screens\favorites_screen.dart
 ================================================================================
 
-// lib/features/favorites/ui/screens/favorites_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:surf_places/assets/images/app_svg_icons.dart';
@@ -1415,9 +1492,7 @@ import 'package:surf_places/features/place_detail/ui/screens/place_detail_screen
 import 'package:surf_places/uikit/images/svg_picture_widget.dart';
 import 'package:surf_places/uikit/themes/colors/app_color_theme.dart';
 import 'package:surf_places/uikit/themes/text/app_text_theme.dart';
-import 'package:surf_places/features/places/ui/widgets/place_card_widget.dart';
 
-/// Экран избранных мест.
 class FavoritesScreen extends StatelessWidget {
   const FavoritesScreen({super.key});
 
@@ -1428,9 +1503,6 @@ class FavoritesScreen extends StatelessWidget {
     final favoritesRepository = context.read<IFavoritesRepository>();
 
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text(AppStrings.placesScreenBottomNavFavorites),
-      // ),
       body: NestedScrollView(
         headerSliverBuilder:
             (_, __) => [
@@ -1460,7 +1532,7 @@ class FavoritesScreen extends StatelessWidget {
                     Text(
                       AppStrings.favoritesEmpty,
                       style: textTheme.subtitle.copyWith(
-                        color:  colorTheme.inactive,
+                        color: colorTheme.inactive,
                       ),
                     ),
                   ],
@@ -1473,12 +1545,40 @@ class FavoritesScreen extends StatelessWidget {
               itemCount: favorites.length,
               itemBuilder: (context, index) {
                 final place = favorites[index];
-                return PlaceCardWidget(
-                  place: place,
-                  onCardTap: () => _navigateToPlaceDetail(context, place),
-                  onLikeTap: () => favoritesRepository.toggleFavorite(place),
-                  isFavorite: true,
-                  cardType: PlaceCardType.favorite,
+                return Dismissible(
+                  key: Key(place.id.toString()),
+                  direction: DismissDirection.endToStart,
+                  background: Container(
+                    decoration: BoxDecoration(
+                      color: colorTheme.error,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(right: 20),
+                    margin: const EdgeInsets.only(bottom: 16),
+                    child: const Icon(Icons.delete, color: Colors.white),
+                  ),
+                  onDismissed: (direction) {
+                    favoritesRepository.removeFavorite(place);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('${place.name} удалено из избранного'),
+                        action: SnackBarAction(
+                          label: 'Отмена',
+                          onPressed: () {
+                            favoritesRepository.toggleFavorite(place);
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                  child: _FavoritePlaceCard(
+                    place: place,
+                    onTap: () => _navigateToPlaceDetail(context, place),
+                    onShare: () {
+                      // TODO: Реализовать функционал "Поделиться"
+                    },
+                  ),
                 );
               },
               separatorBuilder: (_, __) => const SizedBox(height: 16),
@@ -1498,6 +1598,203 @@ class FavoritesScreen extends StatelessWidget {
   }
 }
 
+class _FavoritePlaceCard extends StatelessWidget {
+  final PlaceEntity place;
+  final VoidCallback onTap;
+  final VoidCallback onShare;
+
+  const _FavoritePlaceCard({
+    required this.place,
+    required this.onTap,
+    required this.onShare,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorTheme = AppColorTheme.of(context);
+    final textTheme = AppTextTheme.of(context);
+    const cardHeight = 188.0;
+    const imageHeight = 96.0;
+
+    return SizedBox(
+      height: cardHeight,
+      child: Material(
+        color: colorTheme.surface,
+        borderRadius: BorderRadius.circular(12),
+        clipBehavior: Clip.antiAlias,
+        child: Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Stack(
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      height: imageHeight,
+                      child: Image.network(
+                        place.images.firstOrNull ?? '',
+                        fit: BoxFit.cover,
+                        errorBuilder:
+                            (_, __, ___) =>
+                                Center(child: Text(AppStrings.noPhoto)),
+                      ),
+                    ),
+                    Positioned(
+                      left: 16,
+                      top: 16,
+                      child: Text(
+                        place.placeType.name.toLowerCase(),
+                        style: textTheme.smallBold.copyWith(
+                          color: colorTheme.neutralWhite,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        place.name,
+                        style: textTheme.text.copyWith(
+                          color: colorTheme.textSecondary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        place.description,
+                        style: textTheme.small.copyWith(
+                          color: colorTheme.textSecondaryVariant,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            Positioned.fill(
+              child: Material(
+                type: MaterialType.transparency,
+                child: InkWell(onTap: onTap),
+              ),
+            ),
+            Positioned(
+              top: 8,
+              right: 8,
+              child: IconButton(
+                icon: SvgPictureWidget(
+                  AppSvgIcons.icShare,
+                  color: colorTheme.neutralWhite,
+                ),
+                onPressed: onShare,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\onboarding\data\repositories\onboarding_repository.dart
+================================================================================
+
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:surf_places/core/data/repositories/base_repository.dart';
+import 'package:surf_places/core/domain/entities/result/request_operation.dart';
+import 'package:surf_places/features/onboarding/domain/repositories/i_onboarding_repository.dart';
+import 'package:surf_places/features/onboarding/ui/screens/onboarding_model.dart';
+
+final class OnboardingRepository extends BaseRepository implements IOnboardingRepository {
+  const OnboardingRepository();
+
+  @override
+  RequestOperation<bool> isOnboardingCompleted() {
+    return makeApiCall(() async {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getBool(OnboardingModel.prefsKey) ?? false;
+    });
+  }
+
+  @override
+  RequestOperation<void> completeOnboarding() {
+    return makeApiCall(() async {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(OnboardingModel.prefsKey, true);
+    });
+  }
+}
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\onboarding\domain\onboarding_state.dart
+================================================================================
+
+import 'package:flutter/foundation.dart';
+
+@immutable
+sealed class OnboardingCheckState {
+  const OnboardingCheckState();
+}
+
+/// Состояние загрузки
+final class OnboardingCheckStateLoading extends OnboardingCheckState {
+  const OnboardingCheckStateLoading();
+}
+
+/// Состояние ошибки
+final class OnboardingCheckStateFailure extends OnboardingCheckState {
+  final Object error;
+
+  const OnboardingCheckStateFailure(this.error);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is OnboardingCheckStateFailure &&
+          runtimeType == other.runtimeType &&
+          error == other.error;
+
+  @override
+  int get hashCode => error.hashCode;
+}
+
+/// Состояние с данными
+final class OnboardingCheckStateData extends OnboardingCheckState {
+  final bool isOnboardingCompleted;
+
+  const OnboardingCheckStateData(this.isOnboardingCompleted);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is OnboardingCheckStateData &&
+          runtimeType == other.runtimeType &&
+          isOnboardingCompleted == other.isOnboardingCompleted;
+
+  @override
+  int get hashCode => isOnboardingCompleted.hashCode;
+}
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\onboarding\domain\repositories\i_onboarding_repository.dart
+================================================================================
+
+import 'package:surf_places/core/domain/entities/result/request_operation.dart';
+
+abstract interface class IOnboardingRepository {
+  RequestOperation<bool> isOnboardingCompleted();
+  RequestOperation<void> completeOnboarding();
+}
 
 ================================================================================
 File: D:\Program Files\development\new_app_2\lib\features\onboarding\ui\onboarding_dependencies.dart
@@ -1530,7 +1827,6 @@ File: D:\Program Files\development\new_app_2\lib\features\onboarding\ui\screens\
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Модель для экрана онбоардинга.
 class OnboardingModel implements IOnboardingModel {
   static const String prefsKey = 'onboarding_completed';
 
@@ -1552,7 +1848,7 @@ class OnboardingModel implements IOnboardingModel {
   @override
   void setCurrentPage(int page) {
     _currentPageNotifier.value = page;
-    _isLastPageNotifier.value = page == 2; // Предполагаем 3 страницы (0, 1, 2)
+    _isLastPageNotifier.value = page == 2; 
   }
 
   @override
@@ -1629,7 +1925,7 @@ class OnboardingScreen extends StatelessWidget {
     final textTheme = AppTextTheme.of(context);
 
     return Scaffold(
-      backgroundColor: colorTheme.scaffold, // Используем цвет фона из темы
+      backgroundColor: colorTheme.scaffold,
       body: SafeArea(
         child: Stack(
           children: [
@@ -1654,14 +1950,14 @@ class OnboardingScreen extends StatelessWidget {
                 ),
               ],
             ),
-            // Кнопка "Пропустить"
+
             Positioned(
               top: 16,
               right: 16,
               child: ValueListenableBuilder<bool>(
                 valueListenable: wm.isLastPageNotifier,
                 builder: (context, isLastPage, child) {
-                  // Скрываем кнопку "Пропустить" на последней странице
+                 
                   return Visibility(
                     visible: !isLastPage,
                     child: TextButtonWidget(
@@ -1738,30 +2034,24 @@ class _OnboardingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorTheme = AppColorTheme.of(context);
-    final textTheme = AppTextTheme.of(context);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Изображение SVG
           SvgPictureWidget(
             imageAsset,
-            height: 104, // Установите желаемую высоту
-            // width: double.infinity, // Растягиваем по ширине
-            fit: BoxFit.contain, // Или BoxFit.fitWidth
+            height: 104,
+            fit: BoxFit.contain, 
           ),
           const SizedBox(height: 48),
-          // Заголовок
           Text(
             title,
             textAlign: TextAlign.center,
             style: AppTextStyle.title.value,
           ),
           const SizedBox(height: 16),
-          // Описание
           Text(
             description,
             textAlign: TextAlign.center,
@@ -1779,7 +2069,6 @@ class _DotsIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Получаем WM через контекст, чтобы получить доступ к текущей странице
     final wm = context.watch<IOnboardingWM>();
     final colorTheme = AppColorTheme.of(context);
 
@@ -1789,16 +2078,15 @@ class _DotsIndicator extends StatelessWidget {
         return ValueListenableBuilder<int>(
           valueListenable: wm.currentPageNotifier,
           builder: (context, currentPage, child) {
-            // Скрываем кнопку "Пропустить" на последней странице
             return AnimatedContainer(
               duration: const Duration(
                 milliseconds: 300,
-              ), // Длительность анимации
-              curve: Curves.easeInOut, // Тип анимационной кривой
+              ), 
+              curve: Curves.easeInOut, 
               width:
                   currentPage == index
                       ? 24
-                      : 8, // Ширина активной/неактивной точки
+                      : 8,
               height: 8,
               margin: const EdgeInsets.symmetric(horizontal: 4),
               decoration: BoxDecoration(
@@ -1806,8 +2094,8 @@ class _DotsIndicator extends StatelessWidget {
                 color:
                     currentPage == index
                         ? colorTheme
-                            .accent // Цвет активной точки
-                        : colorTheme.inactive, // Цвет неактивной точки
+                            .accent 
+                        : colorTheme.inactive,
               ),
             );
           },
@@ -1835,7 +2123,7 @@ class OnboardingScreenBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: OnboardingDependencies.providers(context), // Передаем context
+      providers: OnboardingDependencies.providers(context),
       child: Builder(
         builder: (context) => OnboardingScreen(wm: context.read<IOnboardingWM>()),
       ),
@@ -1951,27 +2239,121 @@ import 'package:surf_places/core/data/repositories/base_repository.dart';
 import 'package:surf_places/core/domain/entities/result/request_operation.dart';
 import 'package:surf_places/features/common/data/converters/place_converter.dart';
 import 'package:surf_places/features/common/domain/enitities/place_entity.dart';
+import 'package:surf_places/features/places/data/repositories/place_database_repository.dart';
 import 'package:surf_places/features/places/domain/reposiotries/i_places_repository.dart';
 
-/// Реализация [IPlacesRepository].
 final class PlacesRepository extends BaseRepository implements IPlacesRepository {
   final ApiClient _apiClient;
   final IPlaceDtoToEntityConverter _placeDtoToEntityConverter;
+  final PlaceDatabaseRepository _placeDatabaseRepository;
 
-  PlacesRepository({required ApiClient apiClient, required IPlaceDtoToEntityConverter placeDtoToEntityConverter})
-    : _apiClient = apiClient,
-      _placeDtoToEntityConverter = placeDtoToEntityConverter;
+  PlacesRepository({
+    required ApiClient apiClient, 
+    required IPlaceDtoToEntityConverter placeDtoToEntityConverter,
+    required PlaceDatabaseRepository placeDatabaseRepository,
+  }) : _apiClient = apiClient,
+       _placeDtoToEntityConverter = placeDtoToEntityConverter,
+       _placeDatabaseRepository = placeDatabaseRepository;
 
   @override
   RequestOperation<List<PlaceEntity>> getPlaces() {
     return makeApiCall<List<PlaceEntity>>(() async {
+      final cachedPlaces = await _placeDatabaseRepository.getPlaces();
+      if (cachedPlaces.isNotEmpty) {
+        return cachedPlaces;
+      }
+
       final placesDtos = await _apiClient.getPlaces();
-      final placesEntities = _placeDtoToEntityConverter.convertMultiple(placesDtos).toList();
+      final placesEntities = _placeDtoToEntityConverter
+          .convertMultiple(placesDtos)
+          .toList();
+      
+      await _placeDatabaseRepository.savePlaces(placesEntities);
+      
       return placesEntities;
     });
   }
 }
 
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\places\data\repositories\place_database_repository.dart
+================================================================================
+
+import 'package:sqflite/sqflite.dart';
+import 'package:surf_places/core/data/database/database_helper.dart';
+import 'package:surf_places/features/common/domain/enitities/place_entity.dart';
+import 'package:surf_places/features/common/domain/enitities/place_type_entity.dart';
+
+class PlaceDatabaseRepository {
+  final DatabaseHelper _databaseHelper;
+
+  PlaceDatabaseRepository(this._databaseHelper);
+
+  Future<void> savePlaces(List<PlaceEntity> places) async {
+    final db = await _databaseHelper.database;
+    final batch = db.batch();
+
+    // Clear old data first
+    await _databaseHelper.clearDatabase();
+
+    for (final place in places) {
+      batch.insert('places', {
+        'id': place.id,
+        'name': place.name,
+        'description': place.description,
+        'placeType': place.placeType.name,
+        'lat': place.lat,
+        'lon': place.lon,
+      });
+
+      for (final imageUrl in place.images) {
+        batch.insert('place_images', {
+          'placeId': place.id,
+          'url': imageUrl,
+        });
+      }
+    }
+
+    await batch.commit(noResult: true);
+  }
+
+  Future<List<PlaceEntity>> getPlaces() async {
+    final db = await _databaseHelper.database;
+    final List<Map<String, dynamic>> placesMaps = await db.query('places');
+    
+    final List<PlaceEntity> places = [];
+    
+    for (final placeMap in placesMaps) {
+      final images = await db.query(
+        'place_images',
+        where: 'placeId = ?',
+        whereArgs: [placeMap['id']],
+      );
+      
+      places.add(PlaceEntity(
+        id: placeMap['id'],
+        name: placeMap['name'],
+        description: placeMap['description'],
+        placeType: PlaceTypeEntity.values.firstWhere(
+          (e) => e.name == placeMap['placeType'],
+          orElse: () => PlaceTypeEntity.other,
+        ),
+        images: images.map((e) => e['url'] as String).toList(),
+        lat: placeMap['lat'],
+        lon: placeMap['lon'],
+      ));
+    }
+    
+    return places;
+  }
+
+  Future<int> getPlacesCount() async {
+    final db = await _databaseHelper.database;
+    return Sqflite.firstIntValue(
+      await db.rawQuery('SELECT COUNT(*) FROM places')
+    ) ?? 0;
+  }
+}
 
 ================================================================================
 File: D:\Program Files\development\new_app_2\lib\features\places\domain\enitites\liked_place_entity.dart
@@ -2068,9 +2450,11 @@ File: D:\Program Files\development\new_app_2\lib\features\places\ui\places_depen
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:surf_places/api/service/api_client.dart';
+import 'package:surf_places/core/data/database/database_helper.dart';
 import 'package:surf_places/features/common/data/converters/place_converter.dart';
 import 'package:surf_places/features/common/data/converters/place_type_converter.dart';
 import 'package:surf_places/features/common/domain/repositories/i_favorites_repository.dart';
+import 'package:surf_places/features/places/data/repositories/place_database_repository.dart';
 import 'package:surf_places/features/places/data/repositories/places_repository.dart';
 import 'package:surf_places/features/places/domain/reposiotries/i_places_repository.dart';
 import 'package:surf_places/features/places/ui/screens/places_model.dart';
@@ -2079,13 +2463,6 @@ import 'package:surf_places/features/places/ui/screens/places_model.dart';
 abstract class PlacesDependencies {
   static List<SingleChildWidget> providers() {
     return [
-      Provider<IPlacesRepository>(
-        create:
-            (context) => PlacesRepository(
-              apiClient: context.read<ApiClient>(),
-              placeDtoToEntityConverter: PlaceDtoToEntityConverter(placeTypeConverter: PlaceTypeDtoToEntityConverter()),
-            ),
-      ),
       Provider<IPlacesModel>(
         create:
             (context) => PlacesModel(
@@ -2093,6 +2470,22 @@ abstract class PlacesDependencies {
               favoritesRepository: context.read<IFavoritesRepository>(),
             ),
       ),
+      // Provider<DatabaseHelper>(create: (_) => DatabaseHelper.instance),
+      // Provider<PlaceDatabaseRepository>(
+      //   create:
+      //       (context) =>
+      //           PlaceDatabaseRepository(context.read<DatabaseHelper>()),
+      // ),
+      // Provider<IPlacesRepository>(
+      //   create:
+      //       (context) => PlacesRepository(
+      //         apiClient: context.read<ApiClient>(),
+      //         placeDtoToEntityConverter: PlaceDtoToEntityConverter(
+      //           placeTypeConverter: PlaceTypeDtoToEntityConverter(),
+      //         ),
+      //         placeDatabaseRepository: context.read<PlaceDatabaseRepository>(),
+      //       ),
+      // ),
     ];
   }
 }
@@ -2115,9 +2508,11 @@ class PlacesModel implements IPlacesModel {
   final IPlacesRepository _placesRepository;
   final IFavoritesRepository _favoritesRepository;
 
-  PlacesModel({required IPlacesRepository placesRepository, required IFavoritesRepository favoritesRepository})
-    : _placesRepository = placesRepository,
-      _favoritesRepository = favoritesRepository {
+  PlacesModel({
+    required IPlacesRepository placesRepository,
+    required IFavoritesRepository favoritesRepository,
+  }) : _placesRepository = placesRepository,
+       _favoritesRepository = favoritesRepository {
     // listen to favorites changes to update state.
     _favoritesRepository.favoritesListenable.addListener(_onFavoritesChanged);
   }
@@ -2130,23 +2525,53 @@ class PlacesModel implements IPlacesModel {
   ValueListenable<PlacesState> get placesStateListenable => _placesState;
 
   @override
-  void dispose() {
-    _favoritesRepository.favoritesListenable.removeListener(_onFavoritesChanged);
-    _placesState.dispose();
+  Future<void> getPlaces() async {
+    _placesState.value = const PlacesStateLoading();
+
+    try {
+      final placesResult = await _placesRepository.getPlaces();
+      switch (placesResult) {
+        case ResultOk(:final data):
+          _cachedRemotePlaces = data;
+          _updateCombinedPlaces();
+        case ResultFailed(:final error):
+          // Even if there's an error, we might have cached data
+          final cachedPlaces = await _placesRepository.getPlaces();
+          if (cachedPlaces.isFailed) {
+            _cachedRemotePlaces = cachedPlaces as List<PlaceEntity>?;
+            _updateCombinedPlaces();
+          } else {
+            _placesState.value = PlacesStateFailure(error);
+          }
+      }
+    } catch (e) {
+      // Handle any other errors
+      // _placesState.value = PlacesStateFailure(
+      //   UnknownFailure(message: e.toString()),
+      // );
+    }
   }
 
   @override
-  Future<void> getPlaces() async {
-    _placesState.value = const PlacesStateLoading();
-    final placesResult = await _placesRepository.getPlaces();
-    switch (placesResult) {
-      case ResultOk(:final data):
-        _cachedRemotePlaces = data;
-        _updateCombinedPlaces();
-      case ResultFailed(:final error):
-        _placesState.value = PlacesStateFailure(error);
-    }
+  void dispose() {
+    _favoritesRepository.favoritesListenable.removeListener(
+      _onFavoritesChanged,
+    );
+    _placesState.dispose();
   }
+
+  // @override
+  // Future<void> getPlaces() async {
+  //   _placesState.value = const PlacesStateLoading();
+  //   final placesResult = await _placesRepository.getPlaces();
+  //   switch (placesResult) {
+  //     case ResultOk(:final data):
+  //       _cachedRemotePlaces = data;
+  //       _updateCombinedPlaces();
+  //     case ResultFailed(:final error):
+  //       _placesState.value = PlacesStateFailure(error);
+  //   }
+  // }
 
   void _onFavoritesChanged() {
     _updateCombinedPlaces();
@@ -2159,14 +2584,20 @@ class PlacesModel implements IPlacesModel {
     final favorites = _favoritesRepository.favoritesListenable.value;
     final combined =
         remote
-            .map((place) => LikedPlaceEntity(place: place, isFavorite: favorites.any((f) => f.name == place.name)))
+            .map(
+              (place) => LikedPlaceEntity(
+                place: place,
+                isFavorite: favorites.any((f) => f.name == place.name),
+              ),
+            )
             .toList();
 
     _placesState.value = PlacesStateData(combined);
   }
 
   @override
-  ValueListenable<List<PlaceEntity>> get favoritesPlaces => _favoritesRepository.favoritesListenable;
+  ValueListenable<List<PlaceEntity>> get favoritesPlaces =>
+      _favoritesRepository.favoritesListenable;
 }
 
 /// Интерфейс модели для экрана мест.
@@ -2217,7 +2648,9 @@ class PlacesScreen extends StatelessWidget {
             headerSliverBuilder:
                 (_, __) => [
                   SliverAppBar(
-                    title: Center(child: const Text(AppStrings.placesScreenAppBarTitle)),
+                    title: Center(
+                      child: const Text(AppStrings.placesScreenAppBarTitle),
+                    ),
                     floating: true,
                     snap: true,
                   ),
@@ -2233,51 +2666,40 @@ class PlacesScreen extends StatelessWidget {
                     );
                   },
                   child: Container(
-                    height: 40,
+                    height: 50,
                     width: double.infinity,
                     margin: EdgeInsets.only(left: 16, right: 16),
                     decoration: BoxDecoration(
                       color: colorTheme.background,
                       borderRadius: const BorderRadius.all(Radius.circular(12)),
                     ),
-                    child: Stack(
-                      alignment: AlignmentGeometry.directional(0, 0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Positioned(
-                          right: 0,
+                        Flexible(
+                          flex: 1,
+                          child: Container(
+                            margin: EdgeInsets.only(left: 16, right: 16),
+                            child: SvgPictureWidget(AppSvgIcons.icSearch),
+                          ),
+                        ),
+                        Flexible(
+                          flex: 5,
+                          child: Align(
+                            alignment: AlignmentDirectional.centerStart,
+                            child: Container(
+                              child: Text(AppStrings.searchHint),
+                            ),
+                          ),
+                        ),
+                        Flexible(
+                          flex: 1,
                           child: IconButton(
                             icon: SvgPictureWidget(
                               AppSvgIcons.icFilter,
                               color: colorTheme.accent,
                             ),
-                            onPressed: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder:
-                                      (context) => const SearchScreenBuilder(),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                        Positioned(
-                          left: 0,
-                          child: Row(
-                            children: [
-                              IconButton(
-                                icon: SvgPictureWidget(AppSvgIcons.icSearch),
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder:
-                                          (context) =>
-                                              const SearchScreenBuilder(),
-                                    ),
-                                  );
-                                },
-                              ),
-                              Container(child: Text(AppStrings.searchHint)),
-                            ],
+                            onPressed: () {},
                           ),
                         ),
                       ],
@@ -3044,7 +3466,6 @@ class PlaceDetailPhotoSliderWidget extends StatelessWidget {
 File: D:\Program Files\development\new_app_2\lib\features\search\data\repositories\search_repository.dart
 ================================================================================
 
-// lib/features/search/data/repositories/search_repository.dart
 import 'package:surf_places/api/service/api_client.dart';
 import 'package:surf_places/core/data/repositories/base_repository.dart';
 import 'package:surf_places/core/domain/entities/result/request_operation.dart';
@@ -3065,7 +3486,6 @@ final class SearchRepository extends BaseRepository implements ISearchRepository
   @override
   RequestOperation<List<PlaceEntity>> searchPlaces(String query) {
     return makeApiCall(() async {
-      // В реальном приложении здесь будет вызов API с фильтрацией
       final allPlaces = await _apiClient.getPlaces();
       final filteredPlaces = allPlaces.where((place) {
         return place.name.toLowerCase().contains(query.toLowerCase()) ||
@@ -3081,7 +3501,6 @@ final class SearchRepository extends BaseRepository implements ISearchRepository
 File: D:\Program Files\development\new_app_2\lib\features\search\domain\repositories\i_search_repository.dart
 ================================================================================
 
-// lib/features/search/domain/repositories/i_search_repository.dart
 import 'package:surf_places/core/domain/entities/result/request_operation.dart';
 import 'package:surf_places/features/common/domain/enitities/place_entity.dart';
 
@@ -3093,7 +3512,6 @@ abstract interface class ISearchRepository {
 File: D:\Program Files\development\new_app_2\lib\features\search\domain\search_state.dart
 ================================================================================
 
-// lib/features/search/domain/search_state.dart
 import 'package:flutter/foundation.dart';
 import 'package:surf_places/features/common/domain/enitities/place_entity.dart';
 
@@ -3128,12 +3546,10 @@ final class SearchStateResults extends SearchState {
 File: D:\Program Files\development\new_app_2\lib\features\search\ui\screens\search_model.dart
 ================================================================================
 
-// lib/features/search/ui/screens/search_model.dart
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:surf_places/core/domain/entities/result/result.dart';
-import 'package:surf_places/features/common/domain/enitities/place_entity.dart';
 import 'package:surf_places/features/search/domain/repositories/i_search_repository.dart';
 import 'package:surf_places/features/search/domain/search_state.dart';
 
@@ -3151,7 +3567,6 @@ class SearchModel implements ISearchModel {
 
   @override
   void search(String query) {
-    // Отменяем предыдущий таймер, если он есть
     _searchTimer?.cancel();
 
     if (query.length < 3) {
@@ -3161,12 +3576,11 @@ class SearchModel implements ISearchModel {
 
     _state.value = const SearchStateLoading();
 
-    // Запускаем новый таймер
     _searchTimer = Timer(const Duration(milliseconds: 500), () async {
       final result = await _searchRepository.searchPlaces(query);
 
       switch (result) {
-        case ResultOk(:final data as List<PlaceEntity>):
+        case ResultOk(:final data):
           _state.value =
               data.isEmpty
                   ? const SearchStateEmpty()
@@ -3195,7 +3609,6 @@ abstract interface class ISearchModel {
 File: D:\Program Files\development\new_app_2\lib\features\search\ui\screens\search_screen.dart
 ================================================================================
 
-// lib/features/search/ui/screens/search_screen.dart
 import 'package:flutter/material.dart';
 import 'package:surf_places/assets/images/app_svg_icons.dart';
 import 'package:surf_places/assets/strings/app_strings.dart';
@@ -3252,20 +3665,75 @@ class _SearchScreenState extends State<SearchScreen> {
     final textTheme = AppTextTheme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: _buildSearchField(colorTheme, textTheme),
-      ),
-      body: ValueListenableBuilder<SearchState>(
-        valueListenable: widget.wm.stateNotifier,
-        builder: (context, state, _) {
-          return switch (state) {
-            SearchStateInitial() => _buildInitialState(colorTheme, textTheme),
-            SearchStateLoading() => _buildLoadingState(),
-            SearchStateEmpty() => _buildEmptyState(colorTheme, textTheme),
-            SearchStateError(:final message) => _buildErrorState(message, colorTheme, textTheme),
-            SearchStateResults(:final places) => _buildResults(places, colorTheme, textTheme),
-          };
-        },
+      appBar: AppBar(title: Center(child: Text(AppStrings.placesScreenAppBarTitle),),),
+      body: Column(
+        children: [
+          GestureDetector(
+            onTap: () {},
+            child: Container(
+              height: 50,
+              width: double.infinity,
+              margin: EdgeInsets.only(left: 16, right: 16),
+              decoration: BoxDecoration(
+                color: colorTheme.background,
+                borderRadius: const BorderRadius.all(Radius.circular(12)),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    flex: 1,
+                    child: Container(
+                      margin: EdgeInsets.only(left: 16, right: 16),
+                      child: SvgPictureWidget(AppSvgIcons.icSearch),
+                    ),
+                  ),
+                  Flexible(
+                    flex: 5,
+                    child: _buildSearchField(colorTheme, textTheme),
+                  ),
+                  Flexible(
+                    flex: 1,
+                    child: IconButton(
+                      icon: SvgPictureWidget(
+                        AppSvgIcons.icClear,
+                        color: colorTheme.accent,
+                      ),
+                      onPressed: () {
+                        _searchController.clear();
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: ValueListenableBuilder<SearchState>(
+              valueListenable: widget.wm.stateNotifier,
+              builder: (context, state, _) {
+                return switch (state) {
+                  SearchStateInitial() => _buildInitialState(
+                    colorTheme,
+                    textTheme,
+                  ),
+                  SearchStateLoading() => _buildLoadingState(),
+                  SearchStateEmpty() => _buildEmptyState(colorTheme, textTheme),
+                  SearchStateError(:final message) => _buildErrorState(
+                    message,
+                    colorTheme,
+                    textTheme,
+                  ),
+                  SearchStateResults(:final places) => _buildResults(
+                    places,
+                    colorTheme,
+                    textTheme,
+                  ),
+                };
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -3277,21 +3745,10 @@ class _SearchScreenState extends State<SearchScreen> {
       autofocus: true,
       decoration: InputDecoration(
         hintText: AppStrings.searchHint,
-        hintStyle: textTheme.text.copyWith(color: colorTheme.textSecondaryVariant),
+        hintStyle: textTheme.text.copyWith(
+          color: colorTheme.textSecondaryVariant,
+        ),
         border: InputBorder.none,
-        prefixIcon: Icon(Icons.search, color: colorTheme.textSecondary),
-        suffixIcon: _searchController.text.isNotEmpty
-            ? IconButton(
-                icon: SvgPictureWidget(
-                  AppSvgIcons.icClear,
-                  color: colorTheme.textSecondary,
-                ),
-                onPressed: () {
-                  _searchController.clear();
-                  _focusNode.requestFocus();
-                },
-              )
-            : null,
       ),
       style: textTheme.text.copyWith(color: colorTheme.textPrimary),
     );
@@ -3316,7 +3773,9 @@ class _SearchScreenState extends State<SearchScreen> {
           const SizedBox(height: 8),
           Text(
             AppStrings.searchInitialDescription,
-            style: textTheme.small.copyWith(color: colorTheme.textSecondaryVariant),
+            style: textTheme.small.copyWith(
+              color: colorTheme.textSecondaryVariant,
+            ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -3347,7 +3806,9 @@ class _SearchScreenState extends State<SearchScreen> {
           const SizedBox(height: 8),
           Text(
             AppStrings.searchEmptyDescription,
-            style: textTheme.small.copyWith(color: colorTheme.textSecondaryVariant),
+            style: textTheme.small.copyWith(
+              color: colorTheme.textSecondaryVariant,
+            ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -3355,7 +3816,11 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  Widget _buildErrorState(String message, AppColorTheme colorTheme, AppTextTheme textTheme) {
+  Widget _buildErrorState(
+    String message,
+    AppColorTheme colorTheme,
+    AppTextTheme textTheme,
+  ) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -3382,7 +3847,11 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  Widget _buildResults(List<PlaceEntity> places, AppColorTheme colorTheme, AppTextTheme textTheme) {
+  Widget _buildResults(
+    List<PlaceEntity> places,
+    AppColorTheme colorTheme,
+    AppTextTheme textTheme,
+  ) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: places.length,
@@ -3391,22 +3860,33 @@ class _SearchScreenState extends State<SearchScreen> {
         return Card(
           margin: const EdgeInsets.only(bottom: 16),
           child: ListTile(
-            leading: place.images.isNotEmpty
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      place.images.first,
-                      width: 56,
-                      height: 56,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Icon(Icons.photo, size: 56, color: colorTheme.inactive),
-                    ),
-                  )
-                : Icon(Icons.photo, size: 56, color: colorTheme.inactive),
-            title: Text(place.name, style: textTheme.text.copyWith(color: colorTheme.textPrimary)),
+            leading:
+                place.images.isNotEmpty
+                    ? ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(
+                        place.images.first,
+                        width: 56,
+                        height: 56,
+                        fit: BoxFit.cover,
+                        errorBuilder:
+                            (_, __, ___) => Icon(
+                              Icons.photo,
+                              size: 56,
+                              color: colorTheme.inactive,
+                            ),
+                      ),
+                    )
+                    : Icon(Icons.photo, size: 56, color: colorTheme.inactive),
+            title: Text(
+              place.name,
+              style: textTheme.text.copyWith(color: colorTheme.textPrimary),
+            ),
             subtitle: Text(
               place.placeType.name.toLowerCase(),
-              style: textTheme.small.copyWith(color: colorTheme.textSecondaryVariant),
+              style: textTheme.small.copyWith(
+                color: colorTheme.textSecondaryVariant,
+              ),
             ),
             onTap: () => _navigateToPlaceDetail(place),
           ),
@@ -3416,11 +3896,11 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 }
 
+
 ================================================================================
 File: D:\Program Files\development\new_app_2\lib\features\search\ui\screens\search_screen_builder.dart
 ================================================================================
 
-// lib/features/search/ui/screens/search_screen_builder.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:surf_places/features/search/ui/search_dependencies.dart';
@@ -3445,7 +3925,6 @@ class SearchScreenBuilder extends StatelessWidget {
 File: D:\Program Files\development\new_app_2\lib\features\search\ui\screens\search_wm.dart
 ================================================================================
 
-// lib/features/search/ui/screens/search_wm.dart
 import 'package:flutter/material.dart';
 import 'package:surf_places/features/search/domain/search_state.dart';
 import 'package:surf_places/features/search/ui/screens/search_model.dart';
@@ -3479,7 +3958,6 @@ abstract interface class ISearchWM {
 File: D:\Program Files\development\new_app_2\lib\features\search\ui\search_dependencies.dart
 ================================================================================
 
-// lib/features/search/ui/search_dependencies.dart
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:surf_places/api/service/api_client.dart';
@@ -3512,10 +3990,9 @@ abstract class SearchDependencies {
 }
 
 ================================================================================
-File: D:\Program Files\development\new_app_2\lib\features\settings\model\settings_model.dart
+File: D:\Program Files\development\new_app_2\lib\features\settings\ui\settings_model.dart
 ================================================================================
 
-// lib/features/settings/data/settings_model.dart
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -3570,11 +4047,10 @@ class SettingsModel implements ISettingsModel {
 File: D:\Program Files\development\new_app_2\lib\features\settings\ui\settings_screen.dart
 ================================================================================
 
-// lib/features/settings/ui/settings_screen.dart
 import 'package:flutter/material.dart';
 import 'package:surf_places/assets/images/app_svg_icons.dart';
 import 'package:surf_places/assets/strings/app_strings.dart';
-import 'package:surf_places/features/settings/viewmodel/settings_wm.dart';
+import 'package:surf_places/features/settings/ui/settings_wm.dart';
 import 'package:surf_places/uikit/images/svg_picture_widget.dart';
 import 'package:surf_places/uikit/themes/colors/app_color_theme.dart';
 import 'package:surf_places/uikit/themes/colors/app_colors.dart';
@@ -3595,14 +4071,8 @@ class SettingsScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // Внешний вид
-          // Text(
-          //   AppStrings.settingsAppearanceSection,
-          //   style: textTheme.subtitle.copyWith(color: colorTheme.textSecondary),
-          // ),
           const SizedBox(height: 8),
 
-          // Переключатель темы
           ValueListenableBuilder<bool>(
             valueListenable: wm.isDarkThemeNotifier,
             builder: (context, isDarkTheme, _) {
@@ -3621,11 +4091,9 @@ class SettingsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
 
-          // Кнопка сброса онбординга
           ListTile(
             title: Text(
               AppStrings.settingsResetOnboarding,
-              // style: textTheme.text.copyWith(color: AppColors.colorBlackGreen),
             ),
             trailing: SvgPictureWidget(
               AppSvgIcons.icInfo,
@@ -3644,12 +4112,11 @@ class SettingsScreen extends StatelessWidget {
 File: D:\Program Files\development\new_app_2\lib\features\settings\ui\settings_screen_builder.dart
 ================================================================================
 
-// lib/features/settings/ui/settings_screen_builder.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:surf_places/features/settings/model/settings_model.dart';
+import 'package:surf_places/features/settings/ui/settings_model.dart';
 import 'package:surf_places/features/settings/ui/settings_screen.dart';
-import 'package:surf_places/features/settings/viewmodel/settings_wm.dart';
+import 'package:surf_places/features/settings/ui/settings_wm.dart';
 
 class SettingsScreenBuilder extends StatelessWidget {
   const SettingsScreenBuilder({super.key});
@@ -3658,7 +4125,6 @@ class SettingsScreenBuilder extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        // Provider<ISettingsModel>(create: (_) => SettingsModel()),
         Provider<ISettingsWM>(create: (context) => SettingsWM(context.read<ISettingsModel>())),
       ],
       child: Builder(
@@ -3669,14 +4135,13 @@ class SettingsScreenBuilder extends StatelessWidget {
 }
 
 ================================================================================
-File: D:\Program Files\development\new_app_2\lib\features\settings\viewmodel\settings_wm.dart
+File: D:\Program Files\development\new_app_2\lib\features\settings\ui\settings_wm.dart
 ================================================================================
 
-// lib/features/settings/ui/settings_wm.dart
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:surf_places/features/onboarding/ui/screens/onboarding_screen_builder.dart';
-import 'package:surf_places/features/settings/model/settings_model.dart';
+import 'package:surf_places/features/settings/ui/settings_model.dart';
 
 abstract class ISettingsWM {
   ValueListenable<bool> get isDarkThemeNotifier;
@@ -3704,7 +4169,7 @@ class SettingsWM implements ISettingsWM {
     //     const SnackBar(content: Text('Onboarding has been reset')),
     //   );
     // });
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) => OnboardingScreenBuilder()));
+    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => OnboardingScreenBuilder()));
   }
 }
 
@@ -3713,10 +4178,9 @@ File: D:\Program Files\development\new_app_2\lib\features\splash\ui\screens\spla
 ================================================================================
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:surf_places/assets/images/app_svg_icons.dart'; // Убедитесь, что путь правильный
+import 'package:surf_places/assets/images/app_svg_icons.dart'; 
 import 'package:surf_places/features/onboarding/ui/screens/onboarding_screen_builder.dart';
-import 'package:surf_places/features/tabs_screen/tabs_screen.dart'; // Убедитесь, что путь к TabsScreen правильный
+import 'package:surf_places/features/tabs_screen/tabs_screen.dart'; 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 
@@ -3731,7 +4195,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  // Ключ для SharedPreferences, чтобы проверить, был ли показан онбординг
   static const String _onboardingCompletedKey = 'onboarding_completed';
 
   @override
@@ -3742,16 +4205,12 @@ class _SplashScreenState extends State<SplashScreen> {
 
   /// Определяет, куда нужно перейти после сплэш-скрина.
   Future<void> _navigateAfterDelay() async {
-    // Ждем 2 секунды
     await Future.delayed(const Duration(seconds: 2));
 
-    // Проверяем, завершен ли онбординг
     final prefs = await SharedPreferences.getInstance();
     final isOnboardingCompleted =
         prefs.getBool(_onboardingCompletedKey) ?? false;
 
-    // Переход к нужному экрану
-    // Используем context.mounted для проверки, что виджет еще в дереве
     if (!mounted) return;
     if (isOnboardingCompleted) {
       Navigator.of(context).pushReplacement(
@@ -3770,7 +4229,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor:
-          Theme.of(context).scaffoldBackgroundColor, // Или цвет из вашей темы
+          Theme.of(context).scaffoldBackgroundColor,
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -3780,16 +4239,12 @@ class _SplashScreenState extends State<SplashScreen> {
           ),
         ),
         child: Center(
-          // Используйте ваш SVG логотип
           child: SvgPictureWidget(
             AppSvgIcons.icSplashLogo,
             color: Colors.white,
             width: 150,
             height: 150,
-          ), // Или SvgPicture.asset если используете flutter_svg и нужен SVG
-          // Если у вас нет готового виджета для SVG логотипа, временно можно использовать
-          // Icon или просто Container с цветом
-          // child: Icon(Icons.location_on, size: 100, color: Colors.blue), // Пример
+          ),
         ),
       ),
     );
@@ -3801,11 +4256,9 @@ class _SplashScreenState extends State<SplashScreen> {
 File: D:\Program Files\development\new_app_2\lib\features\tabs_screen\tabs_screen.dart
 ================================================================================
 
-// lib/features/tabs_screen/tabs_screen.dart
 import 'package:flutter/material.dart';
 import 'package:surf_places/assets/strings/app_strings.dart';
 import 'package:surf_places/features/favorites/ui/screens/favorites_screen.dart';
-import 'package:surf_places/features/map/ui/screens/map_screen_builder.dart';
 import 'package:surf_places/features/places/ui/screens/places_screen_builder.dart';
 import 'package:surf_places/features/settings/ui/settings_screen_builder.dart';
 import 'package:surf_places/uikit/images/svg_picture_widget.dart';
@@ -4838,5 +5291,41 @@ class AppTextTheme extends ThemeExtension<AppTextTheme> {
 }
 
 Never _throwThemeNotFound(BuildContext context) => throw Exception('$AppTextTheme not found in $context');
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\test\widget_test.dart
+================================================================================
+
+// This is a basic Flutter widget test.
+//
+// To perform an interaction with a widget in your test, use the WidgetTester
+// utility in the flutter_test package. For example, you can send tap and scroll
+// gestures. You can also use WidgetTester to find child widgets in the widget
+// tree, read text, and verify that the values of widget properties are correct.
+
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+// import 'package:new_app/main.dart';
+
+void main() {
+  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+    // Build our app and trigger a frame.
+    // await tester.pumpWidget(const MyApp());
+
+    // Verify that our counter starts at 0.
+    expect(find.text('0'), findsOneWidget);
+    expect(find.text('1'), findsNothing);
+
+    // Tap the '+' icon and trigger a frame.
+    await tester.tap(find.byIcon(Icons.add));
+    await tester.pump();
+
+    // Verify that our counter has incremented.
+    expect(find.text('0'), findsNothing);
+    expect(find.text('1'), findsOneWidget);
+  });
+}
 
 

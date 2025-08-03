@@ -8,8 +8,7 @@ environment:
   sdk: ^3.7.2
 
 dependencies:
-  # yandex_mapkit: ^4.1.0
-  # google_maps_flutter: ^2.2.3
+  sqflite: ^2.3.0
   geolocator: ^9.0.2
   cached_network_image: 3.4.1
   collection: 1.19.1

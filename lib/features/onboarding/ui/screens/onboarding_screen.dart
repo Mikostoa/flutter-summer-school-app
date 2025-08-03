@@ -60,23 +60,23 @@ class OnboardingScreen extends StatelessWidget {
                     child: TextButtonWidget(
                       title: AppStrings.onboardingSkipButton,
                       onPressed: wm.onSkipPressed,
-                      color: AppColors.colorBlackGreen2, // Цвет текста кнопки
+                      color: AppColors.colorBlackGreen2, 
                     ),
                   );
                 },
               ),
             ),
-            // Индикаторы и кнопка "Далее/На старт"
+          
             Positioned(
               left: 0,
               right: 0,
               bottom: 32,
               child: Column(
                 children: [
-                  // Индикаторы точками
+           
                   const _DotsIndicator(),
                   const SizedBox(height: 32),
-                  // Кнопка "Далее" / "На старт"
+             
                   SizedBox(
                     width: double.infinity,
                     child: Padding(
@@ -88,9 +88,9 @@ class OnboardingScreen extends StatelessWidget {
                             onPressed: wm.onNextPressed,
                             style: FilledButton.styleFrom(
                               backgroundColor:
-                                  colorTheme.accent, // Цвет кнопки из темы
+                                  colorTheme.accent, 
                               foregroundColor:
-                                  colorTheme.neutralWhite, // Цвет текста кнопки
+                                  colorTheme.neutralWhite, 
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
