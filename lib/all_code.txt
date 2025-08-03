@@ -1,0 +1,4842 @@
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\api\data\error_response_dto.dart
+================================================================================
+
+import 'package:json_annotation/json_annotation.dart';
+
+part 'error_response_dto.g.dart';
+
+/// Содержит себе всю информацию о произошедшей в логике на сервере ошибке.
+@JsonSerializable(includeIfNull: false)
+class ErrorResponseDto {
+  /// Код ошибки.
+  @JsonKey(name: 'code')
+  final int code;
+
+  /// Сообщение, которое возможно будет показано на UI,
+  /// либо будет использовано только для информирования разработчиков.
+  @JsonKey(name: 'detail')
+  final String? detail;
+
+  const ErrorResponseDto({required this.code, this.detail});
+
+  /// From Json.
+  factory ErrorResponseDto.fromJson(Map<String, dynamic> json) => _$ErrorResponseDtoFromJson(json);
+
+  /// To Json.
+  Map<String, dynamic> toJson() => _$ErrorResponseDtoToJson(this);
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\api\data\error_response_dto.g.dart
+================================================================================
+
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'error_response_dto.dart';
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+ErrorResponseDto _$ErrorResponseDtoFromJson(Map<String, dynamic> json) =>
+    ErrorResponseDto(
+      code: (json['code'] as num).toInt(),
+      detail: json['detail'] as String?,
+    );
+
+Map<String, dynamic> _$ErrorResponseDtoToJson(ErrorResponseDto instance) =>
+    <String, dynamic>{
+      'code': instance.code,
+      if (instance.detail case final value?) 'detail': value,
+    };
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\api\data\filter_places_request_dto.dart
+================================================================================
+
+import 'package:json_annotation/json_annotation.dart';
+import 'package:surf_places/api/data/place_type_dto.dart';
+
+part 'filter_places_request_dto.g.dart';
+
+/// DTO для запроса списка мест с фильтром.
+@JsonSerializable()
+class FilterPlacesRequestDto {
+  /// Широта.
+  final double? lat;
+
+  /// Долгота.
+  final double? lng;
+
+  /// Фильтр по названию.
+  final String? nameFilter;
+
+  /// Радиус поиска.
+  final double? radius;
+
+  /// Фильтр по типам мест.
+  final List<PlaceTypeDto>? typeFilter;
+  const FilterPlacesRequestDto({this.lat, this.lng, this.radius, this.typeFilter, this.nameFilter});
+
+  /// Создать фильтр по умолчанию на старте приложения.
+  /// По умолчанию координаты на московском кремле.
+  factory FilterPlacesRequestDto.createDefault() =>
+      FilterPlacesRequestDto(lat: 55.754194, lng: 37.620139, radius: 3000, typeFilter: PlaceTypeDto.values);
+
+  factory FilterPlacesRequestDto.fromJson(Map<String, Object?> json) => _$FilterPlacesRequestDtoFromJson(json);
+
+  Map<String, Object?> toJson() => _$FilterPlacesRequestDtoToJson(this);
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\api\data\filter_places_request_dto.g.dart
+================================================================================
+
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'filter_places_request_dto.dart';
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+FilterPlacesRequestDto _$FilterPlacesRequestDtoFromJson(
+  Map<String, dynamic> json,
+) => FilterPlacesRequestDto(
+  lat: (json['lat'] as num?)?.toDouble(),
+  lng: (json['lng'] as num?)?.toDouble(),
+  radius: (json['radius'] as num?)?.toDouble(),
+  typeFilter:
+      (json['typeFilter'] as List<dynamic>?)
+          ?.map((e) => PlaceTypeDto.fromJson(e as String))
+          .toList(),
+  nameFilter: json['nameFilter'] as String?,
+);
+
+Map<String, dynamic> _$FilterPlacesRequestDtoToJson(
+  FilterPlacesRequestDto instance,
+) => <String, dynamic>{
+  'lat': instance.lat,
+  'lng': instance.lng,
+  'nameFilter': instance.nameFilter,
+  'radius': instance.radius,
+  'typeFilter': instance.typeFilter,
+};
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\api\data\place_dto.dart
+================================================================================
+
+import 'package:json_annotation/json_annotation.dart';
+import 'package:surf_places/api/data/place_type_dto.dart';
+
+part 'place_dto.g.dart';
+
+/// DTO места.
+@JsonSerializable(createToJson: false)
+class PlaceDto {
+  /// Идентификатор.
+  final int id;
+
+  /// Название.
+  final String name;
+
+  /// Широта.
+  final double lat;
+
+  /// Долгота.
+  @JsonKey(name: 'lng')
+  final double lon;
+
+  /// Описание.
+  final String description;
+
+  /// Тип места.
+  @JsonKey(name: 'type')
+  final PlaceTypeDto placeType;
+
+  /// Ссылки на картинки.
+  @JsonKey(name: 'urls')
+  final List<String> images;
+
+  const PlaceDto({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.placeType,
+    required this.images,
+    required this.lat,
+    required this.lon,
+  });
+
+  factory PlaceDto.fromJson(Map<String, dynamic> json) => _$PlaceDtoFromJson(json);
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\api\data\place_dto.g.dart
+================================================================================
+
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'place_dto.dart';
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+PlaceDto _$PlaceDtoFromJson(Map<String, dynamic> json) => PlaceDto(
+  id: (json['id'] as num).toInt(),
+  name: json['name'] as String,
+  description: json['description'] as String,
+  placeType: PlaceTypeDto.fromJson(json['type'] as String),
+  images: (json['urls'] as List<dynamic>).map((e) => e as String).toList(),
+  lat: (json['lat'] as num).toDouble(),
+  lon: (json['lng'] as num).toDouble(),
+);
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\api\data\place_type_dto.dart
+================================================================================
+
+import 'package:json_annotation/json_annotation.dart';
+
+/// DTO типа места.
+@JsonEnum()
+enum PlaceTypeDto {
+  /// Ресторан.
+  @JsonValue('restaurant')
+  restaurant('restaurant'),
+
+  /// Кафе.
+  @JsonValue('cafe')
+  cafe('cafe'),
+
+  /// Парк.
+  @JsonValue('park')
+  park('park'),
+
+  /// Музей.
+  @JsonValue('museum')
+  museum('museum'),
+
+  /// Памятник.
+  @JsonValue('monument')
+  monument('monument'),
+
+  /// Театр.
+  @JsonValue('theatre')
+  theatre('theatre'),
+
+  /// Храм.
+  @JsonValue('temple')
+  temple('temple'),
+
+  /// Отель.
+  @JsonValue('hotel')
+  hotel('hotel'),
+
+  /// Магазин.
+  @JsonValue('shopping')
+  shopping('shopping'),
+
+  /// Другое.
+  @JsonValue('other')
+  other('other');
+
+  const PlaceTypeDto(this.json);
+
+  factory PlaceTypeDto.fromJson(String json) => values.firstWhere((value) => value.json == json, orElse: () => other);
+
+  final String? json;
+
+  String? toJson() => json;
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\api\service\api_client.dart
+================================================================================
+
+import 'package:dio/dio.dart' hide Headers;
+import 'package:retrofit/retrofit.dart';
+import 'package:surf_places/api/data/place_dto.dart';
+import 'package:surf_places/api/service/api_urls.dart';
+
+part 'api_client.g.dart';
+
+/// REST-клиент.
+@RestApi()
+abstract class ApiClient {
+  factory ApiClient(Dio dio, {String baseUrl}) = _ApiClient;
+
+  /// Получение списка мест.
+  @GET(ApiUrls.places)
+  Future<List<PlaceDto>> getPlaces();
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\api\service\api_client.g.dart
+================================================================================
+
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'api_client.dart';
+
+// **************************************************************************
+// RetrofitGenerator
+// **************************************************************************
+
+// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter
+
+class _ApiClient implements ApiClient {
+  _ApiClient(this._dio, {this.baseUrl, this.errorLogger});
+
+  final Dio _dio;
+
+  String? baseUrl;
+
+  final ParseErrorLogger? errorLogger;
+
+  @override
+  Future<List<PlaceDto>> getPlaces() async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<List<PlaceDto>>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/places',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<List<dynamic>>(_options);
+    late List<PlaceDto> _value;
+    try {
+      _value =
+          _result.data!
+              .map((dynamic i) => PlaceDto.fromJson(i as Map<String, dynamic>))
+              .toList();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
+    if (T != dynamic &&
+        !(requestOptions.responseType == ResponseType.bytes ||
+            requestOptions.responseType == ResponseType.stream)) {
+      if (T == String) {
+        requestOptions.responseType = ResponseType.plain;
+      } else {
+        requestOptions.responseType = ResponseType.json;
+      }
+    }
+    return requestOptions;
+  }
+
+  String _combineBaseUrls(String dioBaseUrl, String? baseUrl) {
+    if (baseUrl == null || baseUrl.trim().isEmpty) {
+      return dioBaseUrl;
+    }
+
+    final url = Uri.parse(baseUrl);
+
+    if (url.isAbsolute) {
+      return url.toString();
+    }
+
+    return Uri.parse(dioBaseUrl).resolveUri(url).toString();
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\api\service\api_urls.dart
+================================================================================
+
+/// Класс с URL-адресами API.
+class ApiUrls {
+  /// Получение списка мест
+  static const String places = '/places';
+
+  const ApiUrls._();
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\assets\images\app_svg_icons.dart
+================================================================================
+
+/// {@template app_svg_icons.class}
+/// Иконки и изображения в формате svg.
+/// {@endtemplate}
+abstract class AppSvgIcons {
+  /// Онбординг.
+  static const onboardingPage1 = 'assets/icons/onboarding_page_1.svg';
+  static const onboardingPage2 = 'assets/icons/onboarding_page_2.svg';
+  static const onboardingPage3 = 'assets/icons/onboarding_page_3.svg';
+
+  /// bottom Navigation Bar
+  static const icList = 'assets/icons/list.svg';
+  static const icListFull = 'assets/icons/list_full.svg';
+  static const icMap = 'assets/icons/map.svg';
+  static const icMapFull = 'assets/icons/map_full.svg';
+  static const icHeart = 'assets/icons/heart.svg';
+  static const icHeartFull = 'assets/icons/heart_full.svg';
+  static const icSettings = 'assets/icons/settings.svg';
+  static const icSettingsFull = 'assets/icons/settings_full.svg';
+
+  /// действия на карточке
+  static const icCalendar = 'assets/icons/calendar.svg';
+  static const icClose = 'assets/icons/close.svg';
+  static const icShare = 'assets/icons/share.svg';
+  static const icFavorites = 'assets/icons/heart.svg';
+  static const icFavoritesFull = 'assets/icons/heart_full.svg';
+  static const icRemove = 'assets/icons/remove.svg';
+
+  /// другие кнопки
+  static const icGo = 'assets/icons/go.svg';
+  static const icArrow = 'assets/icons/arrow.svg';
+  static const icArrowLeading = 'assets/icons/arrow_leading.svg';
+  static const icView = 'assets/icons/view.svg';
+  static const icViewUp = 'assets/icons/view_up.svg';
+  static const icPlus = 'assets/icons/plus.svg';
+  static const icMinus = 'assets/icons/minus.svg';
+  static const icFilter = 'assets/icons/filter.svg';
+  static const icSearch = 'assets/icons/search.svg';
+  static const icDelete = 'assets/icons/delete.svg';
+  static const icClear = 'assets/icons/clear.svg';
+  static const icBucket = 'assets/icons/bucket.svg';
+
+  /// пустые страницы (результат не найден) и ошибки
+  static const icEmptyPlanned = 'assets/icons/error_card.svg';
+  static const icEmptyVisited = 'assets/icons/error_go.svg';
+  static const icEmptySearch = 'assets/icons/error_search.svg';
+  static const icNetworkException = 'assets/icons/error_delete.svg';
+
+  /// категории фильтра поиска
+  static const icTemple = 'assets/icons/catalog/temple.svg';
+  static const icMonument = 'assets/icons/catalog/monument.svg';
+  static const icPark = 'assets/icons/catalog/park.svg';
+  static const icTheatre = 'assets/icons/catalog/theatre.svg';
+  static const icMuseum = 'assets/icons/catalog/museum.svg';
+  static const icHotel = 'assets/icons/catalog/hotel.svg';
+  static const icRestaurant = 'assets/icons/catalog/restaurant.svg';
+  static const icCafe = 'assets/icons/catalog/cafe.svg';
+  static const icOther = 'assets/icons/catalog/other.svg';
+  static const icIsChose = 'assets/icons/tick_choice.svg';
+  static const icTick = 'assets/icons/tick.svg';
+
+  /// настройки
+  static const icInfo = 'assets/icons/info.svg';
+
+  /// сплэш
+  static const icSplashLogo = 'assets/icons/splash_logo.svg';
+
+  /// загрузка фото при добавлении нового места
+  static const icCamera = 'assets/icons/camera.svg';
+  static const icPhoto = 'assets/icons/photo.svg';
+  static const icFail = 'assets/icons/fail.svg';
+
+  /// лоадер из дизайна
+  static const icLoaderSmallWhite = 'assets/icons/loader/small_white.png';
+  static const icLoaderSmallBlack = 'assets/icons/loader/small_black.png';
+  static const icLoaderLargeWhite = 'assets/icons/loader/large_white.png';
+  static const icLoaderLargeBlack = 'assets/icons/loader/large_black.png';
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\assets\strings\app_strings.dart
+================================================================================
+
+/// Строковые константы.
+abstract class AppStrings {
+  /// Онбординг.
+  static const onboardingSkipButton = 'Пропустить';
+  static const onboardingPage1Title = 'Добро пожаловать\nв Путеводитель';
+  static const onboardingPage1Description =
+      'Ищи новые локации и сохраняй\nсамые любимые.';
+  static const onboardingPage2Title = 'Построй маршрут\nи отправляйся в путь';
+  static const onboardingPage2Description =
+      'Достигай цели максимально\nбыстро и комфортно.';
+  static const onboardingPage3Title = 'Добавляй места,\nкоторые нашёл сам';
+  static const onboardingPage3Description =
+      'Делись самыми интересными\nи помоги нам стать лучше!';
+  static const onboardingStartButton = 'На старт';
+  static const onboardingNextButton = 'Далее';
+
+  /// Список мест.
+  static const placesScreenAppBarTitle = 'Список мест';
+  static const placesScreenBottomNavPlaces = 'Места';
+  static const placesScreenBottomNavFavorites = 'Избранное';
+  static const placesScreenBottomNavSettings = 'Настройки';
+
+  /// Детали места.
+  static const placeDetailsRouteButton = 'ПОСТРОИТЬ МАРШРУТ';
+  static const placeDetailsFavoritesButton = 'В Избранное';
+  static const placeDetailsInFavoritesButton = 'В Избранном';
+
+  /// Снэк-бары для действий с карточкой.
+  static const cardTapSnackbar = 'Тап по карточке';
+  static const likeTapSnackbar = 'Лайк для';
+
+  /// Загрузка, ошибки
+  static const placesLoading = 'Загрузка';
+  static const placesError = 'Что-то пошло не так.\\n Ошибка: ';
+  static const noPhoto = 'Нет фото';
+
+  /// Заглушки
+  static const favoritesStub = 'Избранное (заглушка)';
+  static const settingsStub = 'Настройки (заглушка)';
+  static const favoritesEmpty = 'Пусто';
+
+  // Настройки
+  static const settingsScreenTitle = 'Настройки';
+  static const settingsAppearanceSection = 'Внешний вид';
+  static const settingsThemeToggle = 'Темная тема';
+  static const settingsResetOnboarding = 'Смотреть туториал';
+
+  static const searchHint = 'Поиск мест...';
+  static const searchInitialTitle = 'Начните поиск';
+  static const searchInitialDescription = 'Введите минимум 3 символа для поиска мест';
+  static const searchEmptyTitle = 'Ничего не найдено';
+  static const searchEmptyDescription = 'Попробуйте изменить параметры поиска';
+  static const searchErrorTitle = 'Ошибка поиска';
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\collect_code.dart
+================================================================================
+
+
+import 'dart:io';
+
+void main() async {
+  // Путь к корневой папке проекта
+  final projectDir = Directory.current;
+  // Путь к выходному файлу
+  final outputFile = File('all_code.txt');
+  
+  // Создаем или очищаем выходной файл
+  if (await outputFile.exists()) {
+    await outputFile.delete();
+  }
+  await outputFile.create();
+  
+  // Список расширений файлов для обработки
+  const extensions = ['.dart'];
+  
+  // Собираем содержимое всех файлов
+  StringBuffer buffer = StringBuffer();
+  
+  await _scanDirectory(projectDir, buffer, extensions);
+  
+  // Записываем результат в файл
+  await outputFile.writeAsString(buffer.toString());
+  
+  print('Все файлы собраны в ${outputFile.path}');
+}
+
+Future<void> _scanDirectory(Directory dir, StringBuffer buffer, List<String> extensions) async {
+  await for (var entity in dir.list(recursive: false, followLinks: false)) {
+    if (entity is File) {
+      // Проверяем расширение файла
+      if (extensions.any((ext) => entity.path.endsWith(ext))) {
+        // Добавляем разделитель и путь к файлу
+        buffer.writeln('=' * 80);
+        buffer.writeln('File: ${entity.path}');
+        buffer.writeln('=' * 80);
+        buffer.writeln();
+        
+        // Читаем содержимое файла
+        try {
+          String content = await entity.readAsString();
+          buffer.writeln(content);
+          buffer.writeln();
+        } catch (e) {
+          buffer.writeln('Error reading file: $e');
+          buffer.writeln();
+        }
+      }
+    } else if (entity is Directory) {
+      // Игнорируем определенные папки (например, build, .dart_tool)
+      if (!_isIgnoredDirectory(entity)) {
+        await _scanDirectory(entity, buffer, extensions);
+      }
+    }
+  }
+}
+
+bool _isIgnoredDirectory(Directory dir) {
+  // Список папок, которые нужно игнорировать
+  const ignoredDirs = [
+    'build',
+    '.dart_tool',
+    '.git',
+    'ios',
+    'android',
+    'web',
+    'macos',
+    'linux',
+    'windows',
+    'test_driver'
+  ];
+  return ignoredDirs.any((ignored) => dir.path.endsWith(ignored));
+}
+
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\core\data\converter\converter.dart
+================================================================================
+
+/// {@template converter.class}
+/// Base class for converters.
+/// {@endtemplate}
+abstract base class Converter<TResult, TFrom> {
+  /// {@macro converter.class}
+  const Converter();
+
+  /// Convert TFrom to TResult.
+  TResult convert(TFrom input);
+
+  /// Convert TFrom list to TResult list.
+  Iterable<TResult> convertMultiple(Iterable<TFrom> inputList) => inputList.map(convert);
+
+  /// Convert nullable TFrom to nullable TResult.
+  TResult? convertNullable(TFrom? input) => input == null ? null : convert(input);
+}
+
+/// {@template converter_to_and_from.class}
+/// Base class for converters that convert to and from a type.
+/// {@endtemplate}
+abstract base class ConverterToAndFrom<TResult, TFrom> {
+  /// {@macro converter.class}
+  const ConverterToAndFrom();
+
+  /// TResult from TFrom converter.
+  Converter<TResult, TFrom> get converter;
+
+  /// TFrom from TResult converter.
+  Converter<TFrom, TResult> get reverseConverter;
+
+  /// Convert TFrom to TResult.
+  TResult convert(TFrom input) => converter.convert(input);
+
+  /// Convert TResult to TFrom.
+  TFrom convertReverse(TResult input) => reverseConverter.convert(input);
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\core\data\repositories\base_repository.dart
+================================================================================
+
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:surf_places/api/data/error_response_dto.dart';
+import 'package:surf_places/core/domain/entities/failure/failure.dart';
+import 'package:surf_places/core/domain/entities/failure/network/bad_request_failure.dart';
+import 'package:surf_places/core/domain/entities/failure/network/internal_server_failure.dart';
+import 'package:surf_places/core/domain/entities/failure/network/network_failure.dart';
+import 'package:surf_places/core/domain/entities/failure/network/no_network_failure.dart';
+import 'package:surf_places/core/domain/entities/failure/network/server_not_responding_failure.dart';
+import 'package:surf_places/core/domain/entities/failure/network/too_many_requests_failure.dart';
+import 'package:surf_places/core/domain/entities/failure/network/unauthorized_failure.dart';
+import 'package:surf_places/core/domain/entities/failure/network/unknown_network_failure.dart';
+import 'package:surf_places/core/domain/entities/failure/unknown_failure.dart';
+import 'package:surf_places/core/domain/entities/result/request_operation.dart';
+import 'package:surf_places/core/domain/entities/result/result.dart';
+
+typedef RequestOperationCallback<T> = RequestOperation<T> Function();
+
+/// {@template base_repository.class}
+/// Базовый класс для всех репозиториев в приложении.
+/// {@endtemplate}
+abstract base class BaseRepository {
+  /// {@macro base_repository.class}
+  const BaseRepository();
+
+  /// Обёртка для стандартной обработки ошибок обращения к API.
+  @protected
+  RequestOperation<T> makeApiCall<T>(AsyncValueGetter<T> call) async {
+    final Result<T, Failure> failureResult;
+
+    try {
+      final data = await call();
+
+      return Result.ok(data);
+    } on DioException catch (e, s) {
+      failureResult = Result.failed(unwrapDioException(e, trace: s), s);
+    } on Failure catch (e, s) {
+      return Result.failed(e, s);
+    } on Object catch (e, s) {
+      failureResult = Result.failed(UnknownFailure(message: e.toString(), stackTrace: s), s);
+    }
+
+    if (failureResult case ResultFailed(:final error, :final stackTrace)) {
+      _debugPrint(error, stackTrace);
+    }
+
+    return failureResult;
+  }
+
+  /// Маппинг ошибки API.
+  @protected
+  NetworkFailure unwrapDioException(DioException exception, {required StackTrace trace}) {
+    switch (exception.type) {
+      case DioExceptionType.connectionTimeout:
+        return const ServerNotRespondingFailure();
+      case DioExceptionType.sendTimeout ||
+          DioExceptionType.receiveTimeout ||
+          DioExceptionType.cancel ||
+          DioExceptionType.connectionTimeout ||
+          DioExceptionType.connectionError:
+        return const NoNetworkFailure();
+      case DioExceptionType.badResponse:
+        final statusCode = exception.response?.statusCode;
+
+        ErrorResponseDto? errorResponse;
+        if (exception.response?.data case final Map<String, dynamic> data) {
+          try {
+            errorResponse = ErrorResponseDto.fromJson(data);
+          } on Object catch (e, s) {
+            _debugPrint(e, s);
+          }
+        }
+
+        if (statusCode == 400) {
+          return BadRequestFailure(message: errorResponse?.detail);
+        }
+        if (statusCode == 429) {
+          try {
+            return TooManyRequestsFailure(message: errorResponse?.detail);
+          } on Object catch (e, s) {
+            _debugPrint(e, s);
+          }
+        }
+        if (statusCode == 401) {
+          return const UnauthorizedFailure();
+        }
+        if (statusCode == 500) {
+          return const InternalServerFailure();
+        }
+        if (statusCode == 404) {
+          return BadRequestFailure(message: errorResponse?.detail);
+        }
+
+      default:
+        return UnknownNetworkFailure(exception);
+    }
+
+    return UnknownNetworkFailure(exception);
+  }
+
+  // TODO(tech-debt): на рабочих проектах используется логгер.
+  void _debugPrint(Object exception, [StackTrace? stackTrace]) {
+    debugPrint('🔴--------exception $exception');
+    debugPrint('🔴--------stackTrace ${stackTrace ?? 'null'}');
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\core\domain\entities\failure\failure.dart
+================================================================================
+
+/// Ошибка, обработанная в слое бизнес-логики приложения.
+///
+/// Ожидается, что это единственный вид ошибки, который мы можем получить
+/// в презентационном слое приложения.
+abstract class Failure implements Exception {
+  /// Сообщение ошибки.
+  ///
+  /// Должно иметь такое содержание, которое будет понятно при чтении логов.
+  final String? message;
+
+  /// Родительский [Exception], если имеется.
+  ///
+  /// Необходим для корректной фиксации логов.
+  final Exception? parentException;
+
+  /// [StackTrace] родительской ошибки, если есть.
+  final StackTrace? stackTrace;
+
+  const Failure({this.message, this.parentException, this.stackTrace});
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\core\domain\entities\failure\network\bad_request_failure.dart
+================================================================================
+
+import 'package:surf_places/core/domain/entities/failure/network/network_failure.dart';
+
+/// Ошибка запроса с некорректными данными.
+final class BadRequestFailure extends NetworkFailure {
+  const BadRequestFailure({super.message, super.parentException, super.stackTrace});
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\core\domain\entities\failure\network\internal_server_failure.dart
+================================================================================
+
+import 'package:surf_places/core/domain/entities/failure/network/network_failure.dart';
+
+/// Ошибка сервера.
+final class InternalServerFailure extends NetworkFailure {
+  const InternalServerFailure() : super(message: 'Internal server error');
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\core\domain\entities\failure\network\network_failure.dart
+================================================================================
+
+import 'package:surf_places/core/domain/entities/failure/failure.dart';
+
+/// Базовый класс для ошибок сети.
+abstract class NetworkFailure extends Failure {
+  const NetworkFailure({super.message, super.parentException, super.stackTrace});
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\core\domain\entities\failure\network\no_network_failure.dart
+================================================================================
+
+import 'package:surf_places/core/domain/entities/failure/network/network_failure.dart';
+
+/// Ошибка, возникающая при отсутствии интернет-соединения.
+final class NoNetworkFailure extends NetworkFailure {
+  const NoNetworkFailure() : super(message: 'No network connection');
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\core\domain\entities\failure\network\server_not_responding_failure.dart
+================================================================================
+
+import 'package:surf_places/core/domain/entities/failure/network/network_failure.dart';
+
+/// Ошибка, возникающая, когда сервер не отвечает.
+final class ServerNotRespondingFailure extends NetworkFailure {
+  const ServerNotRespondingFailure() : super(message: 'Server not responding');
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\core\domain\entities\failure\network\time_out_exception.dart
+================================================================================
+
+import 'package:surf_places/core/domain/entities/failure/network/network_failure.dart';
+
+/// Ошибка, возникающая при истечении времени ожидания запроса.
+final class TimeoutException extends NetworkFailure {
+  const TimeoutException() : super(message: 'Timeout');
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\core\domain\entities\failure\network\too_many_requests_failure.dart
+================================================================================
+
+import 'package:surf_places/core/domain/entities/failure/network/network_failure.dart';
+
+/// Ошибка, возникающая при слишком большом количестве запросов.
+final class TooManyRequestsFailure extends NetworkFailure {
+  const TooManyRequestsFailure({super.message, super.parentException, super.stackTrace});
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\core\domain\entities\failure\network\unauthorized_failure.dart
+================================================================================
+
+import 'package:surf_places/core/domain/entities/failure/network/network_failure.dart';
+
+/// Ошибка авторизации.
+final class UnauthorizedFailure extends NetworkFailure {
+  const UnauthorizedFailure() : super(message: 'Unauthorized');
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\core\domain\entities\failure\network\unknown_network_failure.dart
+================================================================================
+
+import 'package:surf_places/core/domain/entities/failure/network/network_failure.dart';
+
+/// Неизвестная ошибка сети.
+final class UnknownNetworkFailure extends NetworkFailure {
+  const UnknownNetworkFailure(Exception exception) : super(parentException: exception);
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\core\domain\entities\failure\unknown_failure.dart
+================================================================================
+
+import 'package:surf_places/core/domain/entities/failure/failure.dart';
+
+/// Неизвестная ошибка.
+final class UnknownFailure extends Failure {
+  const UnknownFailure({super.message, super.stackTrace});
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\core\domain\entities\result\request_operation.dart
+================================================================================
+
+import 'package:surf_places/core/domain/entities/failure/failure.dart';
+import 'package:surf_places/core/domain/entities/result/result.dart';
+
+/// Typedef for all methods that may fail.
+/// These are mostly repository methods.
+typedef RequestOperation<T> = Future<Result<T, Failure>>;
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\core\domain\entities\result\result.dart
+================================================================================
+
+/// {@template result.class}
+/// Result of a function execution.
+///
+/// [Result.ok] - named constructor for a successful Result - [Result].
+///
+/// [Result.failed] - named constructor for Result with error - [ResultFailed].
+/// {@endtemplate}
+sealed class Result<TData, TErr extends Object> {
+  /// {@macro result.class}
+  const Result();
+
+  /// {@macro result.class}
+  const factory Result.failed(TErr failure, StackTrace stackTrace) = ResultFailed;
+
+  /// {@macro result.class}
+  const factory Result.ok(TData data) = ResultOk;
+
+  /// If the result is [ResultOk] unwraps it, otherwise returns null.
+  TData? get dataOrNull {
+    return switch (this) {
+      ResultOk<TData, TErr>(:final data) => data,
+      ResultFailed<TData, TErr>() => null,
+    };
+  }
+
+  /// Returns `true` if the result is [ResultFailed].
+  bool get isFailed => this is ResultFailed<TData, TErr>;
+
+  /// Returns `true` if the result is [ResultOk].
+  bool get isOk => this is ResultOk<TData, TErr>;
+
+  /// Convert [ResultOk].
+  // ignore: prefer-typedefs-for-callbacks
+  Result<R, TErr> mapOk<R>(R Function(TData value) mapper) {
+    return switch (this) {
+      ResultOk<TData, TErr>(:final data) => Result.ok(mapper(data)),
+      ResultFailed<TData, TErr>(:final error, :final stackTrace) => Result.failed(error, stackTrace),
+    };
+  }
+
+  /// Unwraps result as [TData].
+  ///
+  /// Rethrows an exception if the result is [ResultFailed].
+  ///
+  /// Designed for cases when you are using repository calls outside of the business logic
+  /// and it is ok to rethrow the exception and catch it in the root level handler.
+  TData unwrap() {
+    return switch (this) {
+      ResultOk<TData, TErr>(:final data) => data,
+      ResultFailed<TData, TErr>(:final error, :final stackTrace) => Error.throwWithStackTrace(error, stackTrace),
+    };
+  }
+
+  /// If the result is [ResultOk] unwraps it, otherwise returns [defaultValue].
+  TData unwrapOr(TData defaultValue) {
+    return switch (this) {
+      ResultOk<TData, TErr>(:final data) => data,
+      ResultFailed<TData, TErr>() => defaultValue,
+    };
+  }
+}
+
+/// {@macro result.class}
+final class ResultOk<TData, TErr extends Object> extends Result<TData, TErr> {
+  /// Successful Result data.
+  final TData data;
+
+  /// {@macro result.class}
+  const ResultOk(this.data);
+}
+
+/// {@macro result.class}
+final class ResultFailed<TData, TErr extends Object> extends Result<TData, TErr> {
+  /// Error.
+  final TErr error;
+
+  /// Stack Trace.
+  final StackTrace stackTrace;
+
+  /// {@macro result.class}
+  const ResultFailed(this.error, this.stackTrace);
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\app\app.dart
+================================================================================
+
+// lib/features/app/app.dart
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:surf_places/features/app/app_home.dart';
+import 'package:surf_places/features/app/di/app_dependencies.dart';
+import 'package:surf_places/features/settings/model/settings_model.dart';
+import 'package:surf_places/uikit/themes/app_theme_data.dart';
+
+class App extends StatelessWidget {
+  const App({super.key});
+  
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [...AppDependencies.providers()],
+      child: Builder(
+        builder: (context) {
+          return ValueListenableBuilder<bool>(
+            valueListenable: context.watch<ISettingsModel>().isDarkThemeNotifier,
+            builder: (context, isDarkTheme, child) {
+              return MaterialApp(
+                debugShowCheckedModeBanner: false,
+                theme: AppThemeData.lightTheme,
+                darkTheme: AppThemeData.darkTheme,
+                themeMode: isDarkTheme ? ThemeMode.dark : ThemeMode.light,
+                home: const AppHome(),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\app\app_home.dart
+================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:surf_places/features/onboarding/ui/screens/onboarding_model.dart'; // Импортируем модель
+import 'package:surf_places/features/onboarding/ui/screens/onboarding_screen_builder.dart';
+import 'package:surf_places/features/tabs_screen/tabs_screen.dart';
+
+/// Виджет, определяющий начальный экран приложения.
+class AppHome extends StatefulWidget {
+  const AppHome({super.key});
+
+  @override
+  State<AppHome> createState() => _AppHomeState();
+}
+
+class _AppHomeState extends State<AppHome> {
+  late Future<bool> _onboardingCompletedFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    // Инициируем проверку завершения онбоардинга
+    _onboardingCompletedFuture = _checkOnboarding();
+  }
+
+  /// Проверяет, был ли онбоардинг завершен.
+  Future<bool> _checkOnboarding() async {
+    // Создаем временную модель для проверки
+    // В идеале это должно делаться через отдельный сервис или репозиторий
+    // Но для простоты создаем экземпляр модели здесь
+    final model = OnboardingModel();
+    final isCompleted = await model.isOnboardingCompleted();
+    model.dispose(); // Не забываем освободить ресурсы
+    return isCompleted;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<bool>(
+      future: _onboardingCompletedFuture,
+      builder: (context, snapshot) {
+        // Пока проверяется состояние онбоардинга, показываем загрузку или пустой контейнер
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // Можно показать SplashScreen или просто пустой контейнер
+          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        } else if (snapshot.hasError) {
+            // Обработка ошибки, если она возникла при проверке
+            // Можно залогировать и показать экран по умолчанию или онбоардинг
+            // Пока просто покажем онбоардинг
+            return const OnboardingScreenBuilder();
+        } else {
+          // Если проверка завершена успешно
+          final isCompleted = snapshot.data ?? false;
+          if (isCompleted) {
+            // Онбоардинг завершен, показываем основной экран
+            return const TabsScreen();
+          } else {
+            // Онбоардинг не завершен, показываем онбоардинг
+            return const OnboardingScreenBuilder();
+          }
+        }
+      },
+    );
+  }
+}
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\app\di\app_dependencies.dart
+================================================================================
+
+import 'package:dio/dio.dart';
+import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
+import 'package:surf_places/api/service/api_client.dart';
+import 'package:surf_places/features/common/data/converters/place_converter.dart';
+import 'package:surf_places/features/common/data/converters/place_type_converter.dart';
+import 'package:surf_places/features/common/data/repositories/favorites_repository.dart';
+import 'package:surf_places/features/common/domain/repositories/i_favorites_repository.dart';
+import 'package:surf_places/features/places/data/repositories/places_repository.dart';
+import 'package:surf_places/features/places/domain/reposiotries/i_places_repository.dart';
+import 'package:surf_places/features/settings/model/settings_model.dart';
+
+/// Класс с зависимостями приложения.
+abstract class AppDependencies {
+  static List<SingleChildWidget> providers() {
+    const timeout = Duration(seconds: 30);
+
+    final dio = Dio();
+
+    dio.options
+      ..baseUrl = 'http://109.73.206.134:8888/api/'
+      ..connectTimeout = timeout
+      ..receiveTimeout = timeout
+      ..sendTimeout = timeout;
+
+    final apiClient = ApiClient(dio);
+
+    final placeTypeConverter = PlaceTypeDtoToEntityConverter();
+    final placeConverter = PlaceDtoToEntityConverter(placeTypeConverter: placeTypeConverter);
+
+    return [
+      Provider<IPlacesRepository>(
+        create: (_) => PlacesRepository(
+          apiClient: apiClient,
+          placeDtoToEntityConverter: placeConverter,
+        ),
+      ),
+      Provider<ApiClient>(create: (_) => apiClient),
+      Provider<IFavoritesRepository>(create: (_) => FavoritesRepository()),
+      Provider<ISettingsModel>(create: (_) => SettingsModel()),
+    ];
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\common\data\converters\place_converter.dart
+================================================================================
+
+import 'package:surf_places/api/data/place_dto.dart';
+import 'package:surf_places/core/data/converter/converter.dart';
+import 'package:surf_places/features/common/data/converters/place_type_converter.dart';
+import 'package:surf_places/features/common/domain/enitities/place_entity.dart';
+
+/// Конвертер из [PlaceDto] в [PlaceEntity].
+typedef IPlaceDtoToEntityConverter = Converter<PlaceEntity, PlaceDto>;
+
+/// Реализация [IPlaceDtoToEntityConverter].
+final class PlaceDtoToEntityConverter extends IPlaceDtoToEntityConverter {
+  /// Конвертер для типа места.
+  final IPlaceTypeDtoToEntityConverter placeTypeConverter;
+
+  const PlaceDtoToEntityConverter({required this.placeTypeConverter});
+
+  @override
+  PlaceEntity convert(PlaceDto input) {
+    final placeType = placeTypeConverter.convert(input.placeType);
+    return PlaceEntity(
+      id: input.id,
+      name: input.name,
+      description: input.description,
+      placeType: placeType,
+      images: input.images,
+      lat: input.lat,
+      lon: input.lon,
+    );
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\common\data\converters\place_type_converter.dart
+================================================================================
+
+import 'package:surf_places/api/data/place_type_dto.dart';
+import 'package:surf_places/core/data/converter/converter.dart';
+import 'package:surf_places/features/common/domain/enitities/place_type_entity.dart';
+
+/// Конвертер из [PlaceTypeDto] в [PlaceTypeEntity].
+typedef IPlaceTypeDtoToEntityConverter = Converter<PlaceTypeEntity, PlaceTypeDto>;
+
+/// Реализация [IPlaceTypeDtoToEntityConverter].
+final class PlaceTypeDtoToEntityConverter extends IPlaceTypeDtoToEntityConverter {
+  const PlaceTypeDtoToEntityConverter();
+
+  @override
+  PlaceTypeEntity convert(PlaceTypeDto input) {
+    return switch (input) {
+      PlaceTypeDto.restaurant => PlaceTypeEntity.restaurant,
+      PlaceTypeDto.cafe => PlaceTypeEntity.cafe,
+      PlaceTypeDto.park => PlaceTypeEntity.park,
+      PlaceTypeDto.museum => PlaceTypeEntity.museum,
+      PlaceTypeDto.shopping => PlaceTypeEntity.shopping,
+      PlaceTypeDto.other => PlaceTypeEntity.other,
+      PlaceTypeDto.monument => PlaceTypeEntity.monument,
+      PlaceTypeDto.theatre => PlaceTypeEntity.theatre,
+      PlaceTypeDto.temple => PlaceTypeEntity.temple,
+      PlaceTypeDto.hotel => PlaceTypeEntity.hotel,
+    };
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\common\data\repositories\favorites_repository.dart
+================================================================================
+
+import 'package:flutter/foundation.dart';
+import 'package:surf_places/features/common/domain/enitities/place_entity.dart';
+import 'package:surf_places/features/common/domain/repositories/i_favorites_repository.dart';
+
+/// {@template favorites_repository.class}
+/// Implementation of [IFavoritesRepository] для хранения избранного в ОЗУ.
+/// {@endtemplate}
+final class FavoritesRepository implements IFavoritesRepository {
+  final _favoritesListenable = ValueNotifier<List<PlaceEntity>>([]);
+
+  /// {@macro favorites_repository.class}
+  FavoritesRepository();
+
+  @override
+  ValueListenable<List<PlaceEntity>> get favoritesListenable => _favoritesListenable;
+
+  @override
+  Future<void> fetchFavorites() async {
+    // В ОЗУ версии просто возвращаем текущий список
+    // Здесь можно добавить имитацию задержки загрузки
+  }
+
+  @override
+  void dispose() {
+    _favoritesListenable.dispose();
+  }
+
+  @override
+  void toggleFavorite(PlaceEntity place) {
+    final favorites = _favoritesListenable.value;
+    final index = favorites.indexWhere((element) => element.name == place.name);
+
+    if (index == -1) {
+      // Добавляем в избранное
+      _favoritesListenable.value = [...favorites, place];
+    } else {
+      // Удаляем из избранного
+      final newFavorites = [...favorites]..removeAt(index);
+      _favoritesListenable.value = newFavorites;
+    }
+  }
+
+  @override
+  void removeFavorite(PlaceEntity place) {
+    final favorites = _favoritesListenable.value;
+    final newFavorites = favorites.where((element) => element.name != place.name).toList();
+    _favoritesListenable.value = newFavorites;
+  }
+
+  @override
+  bool isFavorite(PlaceEntity place) {
+    final favorites = _favoritesListenable.value;
+    return favorites.any((element) => element.name == place.name);
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\common\domain\enitities\place_entity.dart
+================================================================================
+
+import 'package:equatable/equatable.dart';
+import 'package:surf_places/features/common/domain/enitities/place_type_entity.dart';
+
+/// Сущность места.
+class PlaceEntity extends Equatable {
+  const PlaceEntity({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.images,
+    required this.lat,
+    required this.lon,
+    required this.placeType,
+  });
+
+  /// Идентификатор.
+  final int id;
+
+  /// Название.
+  final String name;
+
+  /// Описание.
+  final String description;
+
+  /// Ссылки на картинки.
+  final List<String> images;
+
+  /// Широта.
+  final double lat;
+
+  /// Долгота.
+  final double lon;
+
+  /// Тип места.
+  final PlaceTypeEntity placeType;
+
+  @override
+  List<Object?> get props => [id, name, description, images, lat, lon, placeType];
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\common\domain\enitities\place_type_entity.dart
+================================================================================
+
+/// Типы мест.
+enum PlaceTypeEntity {
+  /// Другое.
+  other,
+
+  /// Парк.
+  park,
+
+  /// Памятник.
+  monument,
+
+  /// Театр.
+  theatre,
+
+  /// Музей.
+  museum,
+
+  /// Храм.
+  temple,
+
+  /// Отель.
+  hotel,
+
+  /// Ресторан.
+  restaurant,
+
+  /// Кафе.
+  cafe,
+
+  /// Магазин.
+  shopping,
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\common\domain\repositories\i_favorites_repository.dart
+================================================================================
+
+import 'package:flutter/foundation.dart';
+import 'package:surf_places/features/common/domain/enitities/place_entity.dart';
+
+/// Интерфейс для работы с избранными местами.
+abstract interface class IFavoritesRepository {
+  /// [ValueListenable] с локальным набором избранных карточек.
+  ValueListenable<List<PlaceEntity>> get favoritesListenable;
+
+  /// Получение избранных мест.
+  Future<void> fetchFavorites();
+
+  /// Освобождение ресурсов.
+  void dispose();
+
+  /// Переключение статуса избранного места.
+  void toggleFavorite(PlaceEntity place);
+
+  /// Удалить избранное место.
+  void removeFavorite(PlaceEntity place);
+
+  /// Проверить, является ли место избранным.
+  bool isFavorite(PlaceEntity place);
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\favorites\ui\screens\favorites_screen.dart
+================================================================================
+
+// lib/features/favorites/ui/screens/favorites_screen.dart
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:surf_places/assets/images/app_svg_icons.dart';
+import 'package:surf_places/assets/strings/app_strings.dart';
+import 'package:surf_places/features/common/domain/enitities/place_entity.dart';
+import 'package:surf_places/features/common/domain/repositories/i_favorites_repository.dart';
+import 'package:surf_places/features/place_detail/ui/screens/place_detail_screen_builder.dart';
+import 'package:surf_places/uikit/images/svg_picture_widget.dart';
+import 'package:surf_places/uikit/themes/colors/app_color_theme.dart';
+import 'package:surf_places/uikit/themes/text/app_text_theme.dart';
+import 'package:surf_places/features/places/ui/widgets/place_card_widget.dart';
+
+/// Экран избранных мест.
+class FavoritesScreen extends StatelessWidget {
+  const FavoritesScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorTheme = AppColorTheme.of(context);
+    final textTheme = AppTextTheme.of(context);
+    final favoritesRepository = context.read<IFavoritesRepository>();
+
+    return Scaffold(
+      // appBar: AppBar(
+      //   title: const Text(AppStrings.placesScreenBottomNavFavorites),
+      // ),
+      body: NestedScrollView(
+        headerSliverBuilder:
+            (_, __) => [
+              SliverAppBar(
+                title: Center(
+                  child: const Text(AppStrings.placesScreenBottomNavFavorites),
+                ),
+                floating: true,
+                snap: true,
+              ),
+            ],
+        body: ValueListenableBuilder<List<PlaceEntity>>(
+          valueListenable: favoritesRepository.favoritesListenable,
+          builder: (context, favorites, _) {
+            if (favorites.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SvgPictureWidget(
+                      AppSvgIcons.icGo,
+                      width: 64,
+                      height: 64,
+                      color: colorTheme.inactive,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      AppStrings.favoritesEmpty,
+                      style: textTheme.subtitle.copyWith(
+                        color:  colorTheme.inactive,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            return ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: favorites.length,
+              itemBuilder: (context, index) {
+                final place = favorites[index];
+                return PlaceCardWidget(
+                  place: place,
+                  onCardTap: () => _navigateToPlaceDetail(context, place),
+                  onLikeTap: () => favoritesRepository.toggleFavorite(place),
+                  isFavorite: true,
+                  cardType: PlaceCardType.favorite,
+                );
+              },
+              separatorBuilder: (_, __) => const SizedBox(height: 16),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  void _navigateToPlaceDetail(BuildContext context, PlaceEntity place) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => PlaceDetailScreenBuilder(place: place),
+      ),
+    );
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\onboarding\ui\onboarding_dependencies.dart
+================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
+import 'package:surf_places/features/onboarding/ui/screens/onboarding_model.dart';
+import 'package:surf_places/features/onboarding/ui/screens/onboarding_wm.dart';
+
+/// Зависимости для экрана онбоардинга.
+abstract class OnboardingDependencies {
+  static List<SingleChildWidget> providers(BuildContext context) {
+    return [
+      Provider<IOnboardingModel>(
+        create: (_) => OnboardingModel(),
+      ),
+      Provider<IOnboardingWM>(
+        create: (context) => OnboardingWM(context.read<IOnboardingModel>(), context),
+      ),
+    ];
+  }
+}
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\onboarding\ui\screens\onboarding_model.dart
+================================================================================
+
+import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+/// Модель для экрана онбоардинга.
+class OnboardingModel implements IOnboardingModel {
+  static const String prefsKey = 'onboarding_completed';
+
+  final _currentPageNotifier = ValueNotifier<int>(0);
+  final _isLastPageNotifier = ValueNotifier<bool>(false);
+
+  @override
+  ValueListenable<int> get currentPageNotifier => _currentPageNotifier;
+
+  @override
+  int get currentPage => _currentPageNotifier.value;
+
+  @override
+  ValueListenable<bool> get isLastPageNotifier => _isLastPageNotifier;
+
+  @override
+  bool get isLastPage => _isLastPageNotifier.value;
+
+  @override
+  void setCurrentPage(int page) {
+    _currentPageNotifier.value = page;
+    _isLastPageNotifier.value = page == 2; // Предполагаем 3 страницы (0, 1, 2)
+  }
+
+  @override
+  Future<void> completeOnboarding() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(prefsKey, true);
+  }
+
+  @override
+  Future<bool> isOnboardingCompleted() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(prefsKey) ?? false;
+  }
+
+  @override
+  void dispose() {
+    _currentPageNotifier.dispose();
+    _isLastPageNotifier.dispose();
+  }
+}
+
+/// Интерфейс модели онбоардинга.
+abstract class IOnboardingModel {
+  /// [ValueListenable] текущей страницы.
+  ValueListenable<int> get currentPageNotifier;
+
+  /// Текущая страница.
+  int get currentPage;
+
+  /// [ValueListenable] флага, указывающего, является ли текущая страница последней.
+  ValueListenable<bool> get isLastPageNotifier;
+
+  /// Флаг, указывающий, является ли текущая страница последней.
+  bool get isLastPage;
+
+  /// Установить текущую страницу.
+  void setCurrentPage(int page);
+
+  /// Отметить онбоардинг как завершенный.
+  Future<void> completeOnboarding();
+
+  /// Проверить, был ли онбоардинг завершен ранее.
+  Future<bool> isOnboardingCompleted();
+
+  /// Освободить ресурсы.
+  void dispose();
+}
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\onboarding\ui\screens\onboarding_screen.dart
+================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:surf_places/assets/images/app_svg_icons.dart';
+import 'package:surf_places/assets/strings/app_strings.dart';
+import 'package:surf_places/features/onboarding/ui/screens/onboarding_wm.dart';
+import 'package:surf_places/uikit/buttons/text_button_widget.dart';
+import 'package:surf_places/uikit/images/svg_picture_widget.dart';
+import 'package:surf_places/uikit/themes/colors/app_color_theme.dart';
+import 'package:surf_places/uikit/themes/colors/app_colors.dart';
+import 'package:surf_places/uikit/themes/text/app_text_style.dart';
+import 'package:surf_places/uikit/themes/text/app_text_theme.dart';
+
+/// Экран онбоардинга.
+class OnboardingScreen extends StatelessWidget {
+  final IOnboardingWM wm;
+
+  const OnboardingScreen({required this.wm, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorTheme = AppColorTheme.of(context);
+    final textTheme = AppTextTheme.of(context);
+
+    return Scaffold(
+      backgroundColor: colorTheme.scaffold, // Используем цвет фона из темы
+      body: SafeArea(
+        child: Stack(
+          children: [
+            PageView(
+              controller: wm.pageController,
+              onPageChanged: wm.onPageChanged,
+              children: const [
+                _OnboardingPage(
+                  imageAsset: AppSvgIcons.onboardingPage1,
+                  title: AppStrings.onboardingPage1Title,
+                  description: AppStrings.onboardingPage1Description,
+                ),
+                _OnboardingPage(
+                  imageAsset: AppSvgIcons.onboardingPage2,
+                  title: AppStrings.onboardingPage2Title,
+                  description: AppStrings.onboardingPage2Description,
+                ),
+                _OnboardingPage(
+                  imageAsset: AppSvgIcons.onboardingPage3,
+                  title: AppStrings.onboardingPage3Title,
+                  description: AppStrings.onboardingPage3Description,
+                ),
+              ],
+            ),
+            // Кнопка "Пропустить"
+            Positioned(
+              top: 16,
+              right: 16,
+              child: ValueListenableBuilder<bool>(
+                valueListenable: wm.isLastPageNotifier,
+                builder: (context, isLastPage, child) {
+                  // Скрываем кнопку "Пропустить" на последней странице
+                  return Visibility(
+                    visible: !isLastPage,
+                    child: TextButtonWidget(
+                      title: AppStrings.onboardingSkipButton,
+                      onPressed: wm.onSkipPressed,
+                      color: AppColors.colorBlackGreen2, // Цвет текста кнопки
+                    ),
+                  );
+                },
+              ),
+            ),
+            // Индикаторы и кнопка "Далее/На старт"
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 32,
+              child: Column(
+                children: [
+                  // Индикаторы точками
+                  const _DotsIndicator(),
+                  const SizedBox(height: 32),
+                  // Кнопка "Далее" / "На старт"
+                  SizedBox(
+                    width: double.infinity,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: ValueListenableBuilder<bool>(
+                        valueListenable: wm.isLastPageNotifier,
+                        builder: (context, isLastPage, child) {
+                          return FilledButton(
+                            onPressed: wm.onNextPressed,
+                            style: FilledButton.styleFrom(
+                              backgroundColor:
+                                  colorTheme.accent, // Цвет кнопки из темы
+                              foregroundColor:
+                                  colorTheme.neutralWhite, // Цвет текста кнопки
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                            ),
+                            child: Text(
+                              isLastPage
+                                  ? AppStrings.onboardingStartButton
+                                  : AppStrings.onboardingNextButton,
+                              style: textTheme.button,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Виджет одной страницы онбоардинга.
+class _OnboardingPage extends StatelessWidget {
+  final String imageAsset;
+  final String title;
+  final String description;
+
+  const _OnboardingPage({
+    required this.imageAsset,
+    required this.title,
+    required this.description,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorTheme = AppColorTheme.of(context);
+    final textTheme = AppTextTheme.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Изображение SVG
+          SvgPictureWidget(
+            imageAsset,
+            height: 104, // Установите желаемую высоту
+            // width: double.infinity, // Растягиваем по ширине
+            fit: BoxFit.contain, // Или BoxFit.fitWidth
+          ),
+          const SizedBox(height: 48),
+          // Заголовок
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: AppTextStyle.title.value,
+          ),
+          const SizedBox(height: 16),
+          // Описание
+          Text(
+            description,
+            textAlign: TextAlign.center,
+            style: AppTextStyle.small.value,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Виджет точечного индикатора.
+class _DotsIndicator extends StatelessWidget {
+  const _DotsIndicator();
+
+  @override
+  Widget build(BuildContext context) {
+    // Получаем WM через контекст, чтобы получить доступ к текущей странице
+    final wm = context.watch<IOnboardingWM>();
+    final colorTheme = AppColorTheme.of(context);
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(3, (index) {
+        return ValueListenableBuilder<int>(
+          valueListenable: wm.currentPageNotifier,
+          builder: (context, currentPage, child) {
+            // Скрываем кнопку "Пропустить" на последней странице
+            return AnimatedContainer(
+              duration: const Duration(
+                milliseconds: 300,
+              ), // Длительность анимации
+              curve: Curves.easeInOut, // Тип анимационной кривой
+              width:
+                  currentPage == index
+                      ? 24
+                      : 8, // Ширина активной/неактивной точки
+              height: 8,
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(32),
+                color:
+                    currentPage == index
+                        ? colorTheme
+                            .accent // Цвет активной точки
+                        : colorTheme.inactive, // Цвет неактивной точки
+              ),
+            );
+          },
+        );
+      }),
+    );
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\onboarding\ui\screens\onboarding_screen_builder.dart
+================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:surf_places/features/onboarding/ui/onboarding_dependencies.dart';
+import 'package:surf_places/features/onboarding/ui/screens/onboarding_screen.dart';
+import 'package:surf_places/features/onboarding/ui/screens/onboarding_wm.dart';
+
+/// Билдер для экрана онбоардинга.
+class OnboardingScreenBuilder extends StatelessWidget {
+  const OnboardingScreenBuilder({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: OnboardingDependencies.providers(context), // Передаем context
+      child: Builder(
+        builder: (context) => OnboardingScreen(wm: context.read<IOnboardingWM>()),
+      ),
+    );
+  }
+}
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\onboarding\ui\screens\onboarding_wm.dart
+================================================================================
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:surf_places/features/onboarding/ui/screens/onboarding_model.dart';
+import 'package:surf_places/features/tabs_screen/tabs_screen.dart'; // Импортируем TabsScreen
+
+/// WM для экрана онбоардинга.
+abstract class IOnboardingWM {
+  /// Контроллер PageView.
+  PageController get pageController;
+
+  /// Текущая страница.
+  int get currentPage;
+
+  ValueListenable<int> get currentPageNotifier;
+
+  /// [ValueListenable] флага, указывающего, является ли текущая страница последней.
+  ValueListenable<bool> get isLastPageNotifier;
+
+  /// Обработчик изменения страницы.
+  void onPageChanged(int page);
+
+  /// Обработчик нажатия кнопки "Пропустить".
+  void onSkipPressed();
+
+  /// Обработчик нажатия кнопки "Далее" / "На старт".
+  void onNextPressed();
+
+  /// Освободить ресурсы.
+  void dispose();
+}
+
+/// Реализация WM для экрана онбоардинга.
+class OnboardingWM implements IOnboardingWM {
+  final IOnboardingModel _model;
+  final BuildContext _context; // Сохраняем контекст для навигации
+
+  @override
+  final PageController pageController = PageController();
+
+  OnboardingWM(this._model, this._context) {
+    // Инициализируем начальное состояние
+    _model.setCurrentPage(pageController.initialPage);
+  }
+
+  @override
+  int get currentPage => _model.currentPage;
+
+  @override
+  ValueListenable<int> get currentPageNotifier => _model.currentPageNotifier;
+
+  @override
+  ValueListenable<bool> get isLastPageNotifier => _model.isLastPageNotifier;
+
+  @override
+  void onPageChanged(int page) {
+    _model.setCurrentPage(page);
+  }
+
+  @override
+  void onSkipPressed() {
+    // Переходим к последней странице
+    pageController.animateToPage(
+      2, // Индекс последней страницы
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  void onNextPressed() async {
+    if (_model.isLastPage) {
+      // Завершаем онбоардинг
+      await _model.completeOnboarding();
+      // Переходим к основному экрану
+      // Используем pushReplacement, чтобы не возвращаться к онбоардингу кнопкой "Назад"
+      Navigator.of(_context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const TabsScreen()),
+      );
+    } else {
+      // Переходим к следующей странице
+      pageController.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    pageController.dispose();
+    _model.dispose();
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\places\data\repositories\places_repository.dart
+================================================================================
+
+import 'package:surf_places/api/service/api_client.dart';
+import 'package:surf_places/core/data/repositories/base_repository.dart';
+import 'package:surf_places/core/domain/entities/result/request_operation.dart';
+import 'package:surf_places/features/common/data/converters/place_converter.dart';
+import 'package:surf_places/features/common/domain/enitities/place_entity.dart';
+import 'package:surf_places/features/places/domain/reposiotries/i_places_repository.dart';
+
+/// Реализация [IPlacesRepository].
+final class PlacesRepository extends BaseRepository implements IPlacesRepository {
+  final ApiClient _apiClient;
+  final IPlaceDtoToEntityConverter _placeDtoToEntityConverter;
+
+  PlacesRepository({required ApiClient apiClient, required IPlaceDtoToEntityConverter placeDtoToEntityConverter})
+    : _apiClient = apiClient,
+      _placeDtoToEntityConverter = placeDtoToEntityConverter;
+
+  @override
+  RequestOperation<List<PlaceEntity>> getPlaces() {
+    return makeApiCall<List<PlaceEntity>>(() async {
+      final placesDtos = await _apiClient.getPlaces();
+      final placesEntities = _placeDtoToEntityConverter.convertMultiple(placesDtos).toList();
+      return placesEntities;
+    });
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\places\domain\enitites\liked_place_entity.dart
+================================================================================
+
+import 'package:equatable/equatable.dart';
+import 'package:surf_places/features/common/domain/enitities/place_entity.dart';
+
+/// Entity that combines information about a [PlaceEntity] and whether it is currently liked (added to favourites).
+class LikedPlaceEntity extends Equatable {
+  const LikedPlaceEntity({required this.place, required this.isFavorite});
+
+  /// Место.
+  final PlaceEntity place;
+
+  /// Флаг, указывающий, добавлено ли место в избранное.
+  final bool isFavorite;
+
+  @override
+  List<Object?> get props => [place, isFavorite];
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\places\domain\enitites\places_state.dart
+================================================================================
+
+import 'package:flutter/foundation.dart';
+import 'package:surf_places/core/domain/entities/failure/failure.dart';
+import 'package:surf_places/features/places/domain/enitites/liked_place_entity.dart';
+
+/// Состояния экрана мест.
+@immutable
+sealed class PlacesState {
+  const PlacesState();
+}
+
+/// Состояние загрузки.
+final class PlacesStateLoading extends PlacesState {
+  const PlacesStateLoading();
+}
+
+/// Состояние ошибки.
+final class PlacesStateFailure extends PlacesState {
+  /// Ошибка.
+  final Failure failure;
+
+  const PlacesStateFailure(this.failure);
+
+  @override
+  int get hashCode => failure.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PlacesStateFailure && runtimeType == other.runtimeType && failure == other.failure;
+}
+
+/// Состояние с данными.
+final class PlacesStateData extends PlacesState {
+  /// Список мест.
+  final List<LikedPlaceEntity> places;
+
+  const PlacesStateData(this.places);
+
+  @override
+  int get hashCode => places.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PlacesStateData && runtimeType == other.runtimeType && listEquals(places, other.places);
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\places\domain\reposiotries\i_places_repository.dart
+================================================================================
+
+import 'package:surf_places/core/domain/entities/result/request_operation.dart';
+import 'package:surf_places/features/common/domain/enitities/place_entity.dart';
+
+/// Интерфейс репозитория для получения мест.
+abstract interface class IPlacesRepository {
+  /// Получить список мест.
+  RequestOperation<List<PlaceEntity>> getPlaces();
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\places\ui\places_dependencies.dart
+================================================================================
+
+import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
+import 'package:surf_places/api/service/api_client.dart';
+import 'package:surf_places/features/common/data/converters/place_converter.dart';
+import 'package:surf_places/features/common/data/converters/place_type_converter.dart';
+import 'package:surf_places/features/common/domain/repositories/i_favorites_repository.dart';
+import 'package:surf_places/features/places/data/repositories/places_repository.dart';
+import 'package:surf_places/features/places/domain/reposiotries/i_places_repository.dart';
+import 'package:surf_places/features/places/ui/screens/places_model.dart';
+
+/// Зависимости для экрана мест.
+abstract class PlacesDependencies {
+  static List<SingleChildWidget> providers() {
+    return [
+      Provider<IPlacesRepository>(
+        create:
+            (context) => PlacesRepository(
+              apiClient: context.read<ApiClient>(),
+              placeDtoToEntityConverter: PlaceDtoToEntityConverter(placeTypeConverter: PlaceTypeDtoToEntityConverter()),
+            ),
+      ),
+      Provider<IPlacesModel>(
+        create:
+            (context) => PlacesModel(
+              placesRepository: context.read<IPlacesRepository>(),
+              favoritesRepository: context.read<IFavoritesRepository>(),
+            ),
+      ),
+    ];
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\places\ui\screens\places_model.dart
+================================================================================
+
+import 'package:flutter/foundation.dart';
+import 'package:surf_places/core/domain/entities/result/result.dart';
+import 'package:surf_places/features/common/domain/enitities/place_entity.dart';
+import 'package:surf_places/features/common/domain/repositories/i_favorites_repository.dart';
+import 'package:surf_places/features/places/domain/enitites/liked_place_entity.dart';
+import 'package:surf_places/features/places/domain/enitites/places_state.dart';
+import 'package:surf_places/features/places/domain/reposiotries/i_places_repository.dart';
+
+/// Модель для экрана мест.
+class PlacesModel implements IPlacesModel {
+  final IPlacesRepository _placesRepository;
+  final IFavoritesRepository _favoritesRepository;
+
+  PlacesModel({required IPlacesRepository placesRepository, required IFavoritesRepository favoritesRepository})
+    : _placesRepository = placesRepository,
+      _favoritesRepository = favoritesRepository {
+    // listen to favorites changes to update state.
+    _favoritesRepository.favoritesListenable.addListener(_onFavoritesChanged);
+  }
+
+  final _placesState = ValueNotifier<PlacesState>(const PlacesStateLoading());
+
+  List<PlaceEntity>? _cachedRemotePlaces;
+
+  @override
+  ValueListenable<PlacesState> get placesStateListenable => _placesState;
+
+  @override
+  void dispose() {
+    _favoritesRepository.favoritesListenable.removeListener(_onFavoritesChanged);
+    _placesState.dispose();
+  }
+
+  @override
+  Future<void> getPlaces() async {
+    _placesState.value = const PlacesStateLoading();
+    final placesResult = await _placesRepository.getPlaces();
+    switch (placesResult) {
+      case ResultOk(:final data):
+        _cachedRemotePlaces = data;
+        _updateCombinedPlaces();
+      case ResultFailed(:final error):
+        _placesState.value = PlacesStateFailure(error);
+    }
+  }
+
+  void _onFavoritesChanged() {
+    _updateCombinedPlaces();
+  }
+
+  void _updateCombinedPlaces() {
+    final remote = _cachedRemotePlaces;
+    if (remote == null) return;
+
+    final favorites = _favoritesRepository.favoritesListenable.value;
+    final combined =
+        remote
+            .map((place) => LikedPlaceEntity(place: place, isFavorite: favorites.any((f) => f.name == place.name)))
+            .toList();
+
+    _placesState.value = PlacesStateData(combined);
+  }
+
+  @override
+  ValueListenable<List<PlaceEntity>> get favoritesPlaces => _favoritesRepository.favoritesListenable;
+}
+
+/// Интерфейс модели для экрана мест.
+abstract class IPlacesModel {
+  /// [ValueListenable] состояния экрана мест.
+  ValueListenable<PlacesState> get placesStateListenable;
+
+  /// [ValueListenable] списка избранных мест.
+  ValueListenable<List<PlaceEntity>> get favoritesPlaces;
+
+  /// Освобождение ресурсов.
+  void dispose();
+
+  /// Получение списка мест.
+  Future<void> getPlaces();
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\places\ui\screens\places_screen.dart
+================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:surf_places/assets/images/app_svg_icons.dart';
+import 'package:surf_places/assets/strings/app_strings.dart';
+import 'package:surf_places/features/places/domain/enitites/places_state.dart';
+import 'package:surf_places/features/places/ui/screens/places_wm.dart';
+import 'package:surf_places/features/places/ui/widgets/place_card_widget.dart';
+import 'package:surf_places/features/search/ui/screens/search_screen_builder.dart';
+import 'package:surf_places/uikit/images/svg_picture_widget.dart';
+import 'package:surf_places/uikit/themes/colors/app_color_theme.dart';
+
+/// Экран списка мест.
+class PlacesScreen extends StatelessWidget {
+  /// WM.
+  final IPlacesWM wm;
+
+  const PlacesScreen({required this.wm, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorTheme = AppColorTheme.of(context);
+    return Scaffold(
+      body: ValueListenableBuilder<PlacesState>(
+        valueListenable: wm.placesStateListenable,
+        builder: (context, places, _) {
+          return NestedScrollView(
+            headerSliverBuilder:
+                (_, __) => [
+                  SliverAppBar(
+                    title: Center(child: const Text(AppStrings.placesScreenAppBarTitle)),
+                    floating: true,
+                    snap: true,
+                  ),
+                ],
+            body: Column(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const SearchScreenBuilder(),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    height: 40,
+                    width: double.infinity,
+                    margin: EdgeInsets.only(left: 16, right: 16),
+                    decoration: BoxDecoration(
+                      color: colorTheme.background,
+                      borderRadius: const BorderRadius.all(Radius.circular(12)),
+                    ),
+                    child: Stack(
+                      alignment: AlignmentGeometry.directional(0, 0),
+                      children: [
+                        Positioned(
+                          right: 0,
+                          child: IconButton(
+                            icon: SvgPictureWidget(
+                              AppSvgIcons.icFilter,
+                              color: colorTheme.accent,
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) => const SearchScreenBuilder(),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        Positioned(
+                          left: 0,
+                          child: Row(
+                            children: [
+                              IconButton(
+                                icon: SvgPictureWidget(AppSvgIcons.icSearch),
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder:
+                                          (context) =>
+                                              const SearchScreenBuilder(),
+                                    ),
+                                  );
+                                },
+                              ),
+                              Container(child: Text(AppStrings.searchHint)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 16),
+                Expanded(
+                  child: RefreshIndicator.adaptive(
+                    onRefresh: wm.loadPlaces,
+                    child: switch (places) {
+                      PlacesStateLoading() => Center(
+                        child: Text(AppStrings.placesLoading),
+                      ),
+                      PlacesStateFailure(:final failure) => Center(
+                        child: Text('${AppStrings.placesError}$failure'),
+                      ),
+                      PlacesStateData(:final places) => ListView.separated(
+                        padding: const EdgeInsets.only(
+                          top: 16,
+                          left: 16,
+                          right: 16,
+                          bottom: 32,
+                        ),
+                        itemCount: places.length,
+                        itemBuilder: (context, index) {
+                          final likedPlace = places[index];
+                          return PlaceCardWidget(
+                            place: likedPlace.place,
+                            onCardTap:
+                                () => wm.onPlacePressed(
+                                  context,
+                                  likedPlace.place,
+                                ),
+                            onLikeTap: () => wm.onLikePressed(likedPlace.place),
+                            isFavorite: likedPlace.isFavorite,
+                          );
+                        },
+                        separatorBuilder: (_, __) => const SizedBox(height: 24),
+                      ),
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\places\ui\screens\places_screen_builder.dart
+================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:surf_places/features/common/domain/repositories/i_favorites_repository.dart';
+import 'package:surf_places/features/places/ui/places_dependencies.dart';
+import 'package:surf_places/features/places/ui/screens/places_model.dart';
+import 'package:surf_places/features/places/ui/screens/places_screen.dart';
+import 'package:surf_places/features/places/ui/screens/places_wm.dart';
+
+/// Билдер для экрана списка мест.
+class PlacesScreenBuilder extends StatelessWidget {
+  const PlacesScreenBuilder({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ...PlacesDependencies.providers(),
+        Provider<IPlacesWM>(
+          create: (context) => PlacesWM(context.read<IPlacesModel>(), context.read<IFavoritesRepository>()),
+        ),
+      ],
+      child: Builder(builder: (context) => PlacesScreen(wm: context.read<IPlacesWM>())),
+    );
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\places\ui\screens\places_wm.dart
+================================================================================
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:surf_places/features/common/domain/enitities/place_entity.dart';
+import 'package:surf_places/features/common/domain/repositories/i_favorites_repository.dart';
+import 'package:surf_places/features/place_detail/ui/screens/place_detail_screen_builder.dart';
+import 'package:surf_places/features/places/domain/enitites/places_state.dart';
+import 'package:surf_places/features/places/ui/screens/places_model.dart';
+
+/// WM для экрана списка мест.
+abstract class IPlacesWM {
+  /// [ValueListenable] состояния экрана мест.
+  ValueListenable<PlacesState> get placesStateListenable;
+
+  /// Освобождение ресурсов.
+  void dispose();
+
+  /// Обработчик нажатия на карточку места.
+  void onPlacePressed(BuildContext context, PlaceEntity place);
+
+  /// Обработчик нажатия на кнопку "лайк".
+  void onLikePressed(PlaceEntity place);
+
+  /// Проверяет, добавлено ли место в избранное.
+  bool isFavorite(PlaceEntity place);
+
+  /// Загрузка списка мест.
+  Future<void> loadPlaces();
+}
+
+/// Реализация WM для экрана списка мест.
+class PlacesWM implements IPlacesWM {
+  final IPlacesModel _model;
+  final IFavoritesRepository _favoritesRepository;
+
+  /// @nodoc
+  PlacesWM(this._model, this._favoritesRepository) {
+    _model.getPlaces();
+  }
+
+  @override
+  ValueListenable<PlacesState> get placesStateListenable => _model.placesStateListenable;
+
+  @override
+  void dispose() => _model.dispose();
+
+  @override
+  void onPlacePressed(BuildContext context, PlaceEntity place) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => PlaceDetailScreenBuilder(place: place)));
+  }
+
+  @override
+  void onLikePressed(PlaceEntity place) {
+    _favoritesRepository.toggleFavorite(place);
+  }
+
+  @override
+  bool isFavorite(PlaceEntity place) {
+    return _favoritesRepository.isFavorite(place);
+  }
+
+  @override
+  Future<void> loadPlaces() => _model.getPlaces();
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\places\ui\widgets\place_card_widget.dart
+================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:surf_places/assets/strings/app_strings.dart';
+import 'package:surf_places/features/common/domain/enitities/place_entity.dart';
+import 'package:surf_places/uikit/themes/colors/app_color_theme.dart';
+import 'package:surf_places/uikit/themes/text/app_text_theme.dart';
+
+/// Тип карточки места.
+enum PlaceCardType {
+  /// Обычная карточка.
+  place,
+
+  /// Карточка в избранном.
+  favorite,
+}
+
+/// Виджет карточки места.
+class PlaceCardWidget extends StatelessWidget {
+  /// Место.
+  final PlaceEntity place;
+
+  /// Обработчик нажатия на карточку.
+  final VoidCallback onCardTap;
+
+  /// Обработчик нажатия на кнопку "лайк".
+  final VoidCallback onLikeTap;
+
+  /// Тип карточки.
+  final PlaceCardType cardType;
+
+  /// Флаг, указывающий, добавлено ли место в избранное.
+  final bool isFavorite;
+
+  const PlaceCardWidget({
+    required this.place,
+    required this.onCardTap,
+    required this.onLikeTap,
+    this.cardType = PlaceCardType.place,
+    this.isFavorite = false,
+    super.key,
+  });
+
+  static const _cardHeight = 188.0;
+  static const _imageHeight = 96.0;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorTheme = AppColorTheme.of(context);
+    final textTheme = AppTextTheme.of(context);
+
+    return SizedBox(
+      height: _cardHeight,
+      child: Material(
+        color: colorTheme.surface,
+        borderRadius: const BorderRadius.all(Radius.circular(12)),
+        clipBehavior: Clip.antiAlias,
+        child: Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Stack(
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      height: _imageHeight,
+                      child: Image.network(
+                        place.images.firstWhere((_) => true, orElse: () => ''),
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Center(child: Text(AppStrings.noPhoto)),
+                      ),
+                    ),
+                    Positioned(
+                      left: 16,
+                      top: 16,
+                      right: 12,
+                      child: Text(
+                        place.placeType.name.toLowerCase(),
+                        style: textTheme.smallBold.copyWith(color: colorTheme.neutralWhite),
+                      ),
+                    ),
+                  ],
+                ),
+                // Content
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        place.name,
+                        style: textTheme.text.copyWith(color: colorTheme.textSecondary),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        place.description,
+                        style: textTheme.small.copyWith(color: colorTheme.textSecondaryVariant),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            Positioned.fill(child: Material(type: MaterialType.transparency, child: InkWell(onTap: onCardTap))),
+            Positioned(
+              top: 8,
+              right: 16,
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: onLikeTap,
+                child: Icon(
+                  isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: isFavorite ? colorTheme.error : colorTheme.neutralWhite,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\place_detail\domain\place_detail_state.dart
+================================================================================
+
+import 'package:flutter/cupertino.dart';
+import 'package:surf_places/features/common/domain/enitities/place_entity.dart';
+
+/// Состояние экрана детальной информации о месте.
+@immutable
+class PlaceDetailState {
+  /// Место.
+  final PlaceEntity place;
+
+  const PlaceDetailState({required this.place});
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\place_detail\place_detail_dependencies.dart
+================================================================================
+
+import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
+import 'package:surf_places/features/common/domain/enitities/place_entity.dart';
+import 'package:surf_places/features/common/domain/repositories/i_favorites_repository.dart';
+import 'package:surf_places/features/place_detail/ui/screens/place_detail_model.dart';
+
+/// Зависимости для экрана детальной информации о месте.
+abstract class PlaceDetailDependencies {
+  static List<SingleChildWidget> providers(PlaceEntity place) {
+    return [
+      Provider<IPlaceDetailModel>(
+        create:
+            (context) =>
+                PlaceDetailModel(placeEntity: place, favoritesRepository: context.read<IFavoritesRepository>()),
+      ),
+    ];
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\place_detail\ui\screens\place_detail_model.dart
+================================================================================
+
+import 'package:surf_places/features/common/domain/enitities/place_entity.dart';
+import 'package:surf_places/features/common/domain/repositories/i_favorites_repository.dart';
+
+/// Модель для экрана детальной информации о месте.
+class PlaceDetailModel implements IPlaceDetailModel {
+  final IFavoritesRepository _favoritesRepository;
+  final PlaceEntity _placeEntity;
+
+  PlaceDetailModel({required PlaceEntity placeEntity, required IFavoritesRepository favoritesRepository})
+    : _favoritesRepository = favoritesRepository,
+      _placeEntity = placeEntity;
+
+  @override
+  PlaceEntity get placeEntity => _placeEntity;
+
+  @override
+  bool toggleFavorite() {
+    _favoritesRepository.toggleFavorite(_placeEntity);
+    return isFavorite();
+  }
+
+  @override
+  bool isFavorite() {
+    return _favoritesRepository.isFavorite(_placeEntity);
+  }
+}
+
+/// Интерфейс модели для экрана детальной информации о месте.
+abstract class IPlaceDetailModel {
+  /// Место.
+  PlaceEntity get placeEntity;
+
+  /// Переключает значение лайка на месте.
+  ///
+  /// Возвращает итоговое значение.
+  bool toggleFavorite();
+
+  /// Проверяет, добавлено ли место в избранное.
+  bool isFavorite();
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\place_detail\ui\screens\place_detail_screen.dart
+================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:surf_places/assets/strings/app_strings.dart';
+import 'package:surf_places/features/common/domain/enitities/place_entity.dart';
+import 'package:surf_places/features/common/domain/repositories/i_favorites_repository.dart';
+import 'package:surf_places/features/place_detail/ui/screens/place_detail_wm.dart';
+import 'package:surf_places/features/place_detail/ui/widgets/heart_animation_widget.dart';
+import 'package:surf_places/features/place_detail/ui/widgets/place_detail_photo_slider_widget.dart';
+import 'package:surf_places/uikit/buttons/main_button.dart';
+import 'package:surf_places/uikit/themes/colors/app_color_theme.dart';
+import 'package:surf_places/uikit/themes/text/app_text_theme.dart';
+
+/// Экран детальной информации о месте.
+class PlaceDetailScreen extends StatelessWidget {
+  /// WM.
+  final IPlaceDetailWM wm;
+
+  /// Место.
+  final PlaceEntity place;
+
+  const PlaceDetailScreen({required this.wm, required this.place, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorTheme = AppColorTheme.of(context);
+    final textTheme = AppTextTheme.of(context);
+
+    return Scaffold(
+      body: Stack(
+        children: [
+          CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                automaticallyImplyLeading: false,
+                expandedHeight: 360,
+                flexibleSpace: PlaceDetailPhotoSliderWidget(
+                  images: wm.placeEntity.images,
+                  onBackPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ),
+              SliverList(
+                delegate: SliverChildListDelegate([
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 24),
+                        Text(place.name, style: textTheme.title.copyWith(color: colorTheme.textSecondary)),
+                        const SizedBox(height: 2),
+                        Text(
+                          place.placeType.name.toLowerCase(),
+                          style: textTheme.smallBold.copyWith(color: colorTheme.textSecondary),
+                        ),
+                        const SizedBox(height: 24),
+                        Text(place.description, style: textTheme.small.copyWith(color: colorTheme.textSecondary)),
+                        const SizedBox(height: 24),
+                        MainButton(
+                          onPressed: () {},
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.route, color: Colors.white),
+                              const SizedBox(width: 8),
+                              Text(
+                                AppStrings.placeDetailsRouteButton,
+                                style: textTheme.button.copyWith(color: colorTheme.neutralWhite),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        const Divider(indent: 16, endIndent: 16),
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Builder(
+                              builder: (context) {
+                                final favoritesRepository = context.read<IFavoritesRepository>();
+                                return ValueListenableBuilder<List<PlaceEntity>>(
+                                  valueListenable: favoritesRepository.favoritesListenable,
+                                  builder: (context, favorites, _) {
+                                    final isFavorite = favorites.any((f) => f.name == place.name);
+                                    return TextButton.icon(
+                                      onPressed: wm.onLikePressed,
+                                      icon: Icon(
+                                        isFavorite ? Icons.favorite : Icons.favorite_border,
+                                        color: isFavorite ? colorTheme.error : colorTheme.textSecondary,
+                                      ),
+                                      label: Text(
+                                        isFavorite
+                                            ? AppStrings.placeDetailsInFavoritesButton
+                                            : AppStrings.placeDetailsFavoritesButton,
+                                        style: textTheme.text.copyWith(color: colorTheme.textSecondary),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                        const SafeArea(child: SizedBox.shrink()),
+                      ],
+                    ),
+                  ),
+                ]),
+              ),
+            ],
+          ),
+          HeartAnimationWidget(key: wm.heartAnimationKey),
+        ],
+      ),
+    );
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\place_detail\ui\screens\place_detail_screen_builder.dart
+================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:surf_places/features/common/domain/enitities/place_entity.dart';
+import 'package:surf_places/features/place_detail/place_detail_dependencies.dart';
+import 'package:surf_places/features/place_detail/ui/screens/place_detail_model.dart';
+import 'package:surf_places/features/place_detail/ui/screens/place_detail_screen.dart';
+import 'package:surf_places/features/place_detail/ui/screens/place_detail_wm.dart';
+
+/// Билдер для экрана детальной информации о месте.
+class PlaceDetailScreenBuilder extends StatelessWidget {
+  /// Место.
+  final PlaceEntity place;
+
+  const PlaceDetailScreenBuilder({required this.place, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ...PlaceDetailDependencies.providers(place),
+        Provider<IPlaceDetailWM>(create: (context) => PlaceDetailWM(context.read<IPlaceDetailModel>())),
+      ],
+      child: Builder(builder: (context) => PlaceDetailScreen(wm: context.read<IPlaceDetailWM>(), place: place)),
+    );
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\place_detail\ui\screens\place_detail_wm.dart
+================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:surf_places/features/common/domain/enitities/place_entity.dart';
+import 'package:surf_places/features/place_detail/ui/screens/place_detail_model.dart';
+import 'package:surf_places/features/place_detail/ui/widgets/heart_animation_widget.dart';
+
+/// WM для экрана детальной информации о месте.
+abstract class IPlaceDetailWM {
+  /// Место.
+  PlaceEntity get placeEntity;
+
+  /// Обработчик нажатия на кнопку "лайк".
+  void onLikePressed();
+
+  /// Проверяет, добавлено ли место в избранное.
+  bool isFavorite();
+
+  /// Ключ для анимации сердца.
+  GlobalKey<HeartAnimationWidgetState> get heartAnimationKey;
+}
+
+/// Реализация WM для экрана детальной информации о месте.
+class PlaceDetailWM implements IPlaceDetailWM {
+  final IPlaceDetailModel _model;
+  final _heartAnimationKey = GlobalKey<HeartAnimationWidgetState>();
+
+  PlaceDetailWM(this._model);
+
+  @override
+  PlaceEntity get placeEntity => _model.placeEntity;
+
+  @override
+  GlobalKey<HeartAnimationWidgetState> get heartAnimationKey => _heartAnimationKey;
+
+  @override
+  void onLikePressed() {
+    final needToAnimate = _model.toggleFavorite();
+
+    if (needToAnimate) {
+      _heartAnimationKey.currentState?.animate();
+    }
+  }
+
+  @override
+  bool isFavorite() {
+    return _model.isFavorite();
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\place_detail\ui\widgets\heart_animation_widget.dart
+================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:surf_places/uikit/themes/colors/app_color_theme.dart';
+
+/// Виджет анимации сердца.
+class HeartAnimationWidget extends StatefulWidget {
+  const HeartAnimationWidget({super.key});
+
+  @override
+  HeartAnimationWidgetState createState() => HeartAnimationWidgetState();
+}
+
+/// Состояние виджета анимации сердца.
+class HeartAnimationWidgetState extends State<HeartAnimationWidget> with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _scale;
+  late final Animation<Color?> _color;
+  bool _showHeartAnimation = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 2));
+
+    _scale = Tween<double>(begin: 1, end: 1.6).animate(CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
+
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        if (mounted) {
+          setState(() {
+            _showHeartAnimation = false;
+          });
+        }
+      }
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final colorTheme = AppColorTheme.of(context);
+    _color = ColorTween(
+      begin: colorTheme.neutralWhite,
+      end: colorTheme.error,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  /// Запускает анимацию.
+  void animate() {
+    if (_controller.isAnimating || !mounted) return;
+
+    setState(() {
+      _showHeartAnimation = true;
+    });
+    _controller.forward(from: 0);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_showHeartAnimation) {
+      return const SizedBox.shrink();
+    }
+
+    return IgnorePointer(
+      child: Center(
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (_, __) {
+            return Transform.scale(scale: _scale.value, child: Icon(Icons.favorite, color: _color.value, size: 160));
+          },
+        ),
+      ),
+    );
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\place_detail\ui\widgets\place_detail_content_widget.dart
+================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:surf_places/features/common/domain/enitities/place_entity.dart';
+import 'package:surf_places/uikit/themes/colors/app_color_theme.dart';
+import 'package:surf_places/uikit/themes/text/app_text_theme.dart';
+
+/// Виджет с контентом детальной информации о месте.
+class PlaceDetailContentWidget extends StatelessWidget {
+  /// Место.
+  final PlaceEntity place;
+
+  const PlaceDetailContentWidget({required this.place, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorTheme = AppColorTheme.of(context);
+    final textTheme = AppTextTheme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 24),
+        Text(place.name, style: textTheme.title.copyWith(color: colorTheme.textSecondary)),
+        const SizedBox(height: 2),
+        Text(place.placeType.name.toLowerCase(), style: textTheme.smallBold.copyWith(color: colorTheme.textSecondary)),
+        const SizedBox(height: 24),
+        Text(place.description, style: textTheme.small.copyWith(color: colorTheme.textSecondary)),
+      ],
+    );
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\place_detail\ui\widgets\place_detail_photo_slider_widget.dart
+================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:surf_places/uikit/themes/colors/app_color_theme.dart';
+
+/// Виджет слайдера с фотографиями места.
+class PlaceDetailPhotoSliderWidget extends StatelessWidget {
+  /// Список ссылок на фотографии.
+  final List<String> images;
+
+  /// Обработчик нажатия на кнопку "назад".
+  final VoidCallback onBackPressed;
+
+  const PlaceDetailPhotoSliderWidget({required this.images, required this.onBackPressed, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorTheme = AppColorTheme.of(context);
+    final topPositionBackButton = MediaQuery.paddingOf(context).top + 16;
+
+    return LayoutBuilder(
+      builder: (_, constraints) {
+        return SizedBox(
+          width: double.infinity,
+          child: Stack(
+            children: [
+              PageView.builder(
+                itemCount: images.length,
+                itemBuilder: (_, index) {
+                  return Image.network(
+                    images[index],
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(color: Colors.grey.shade300),
+                  );
+                },
+              ),
+              Positioned(
+                left: 16,
+                top: topPositionBackButton,
+                child: CircleAvatar(
+                  backgroundColor: colorTheme.scaffold,
+                  child: IconButton(
+                    icon: Icon(Icons.arrow_back, color: colorTheme.textSecondary),
+                    onPressed: onBackPressed,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\search\data\repositories\search_repository.dart
+================================================================================
+
+// lib/features/search/data/repositories/search_repository.dart
+import 'package:surf_places/api/service/api_client.dart';
+import 'package:surf_places/core/data/repositories/base_repository.dart';
+import 'package:surf_places/core/domain/entities/result/request_operation.dart';
+import 'package:surf_places/features/common/data/converters/place_converter.dart';
+import 'package:surf_places/features/common/domain/enitities/place_entity.dart';
+import 'package:surf_places/features/search/domain/repositories/i_search_repository.dart';
+
+final class SearchRepository extends BaseRepository implements ISearchRepository {
+  final ApiClient _apiClient;
+  final IPlaceDtoToEntityConverter _placeConverter;
+
+  SearchRepository({
+    required ApiClient apiClient,
+    required IPlaceDtoToEntityConverter placeConverter,
+  })  : _apiClient = apiClient,
+        _placeConverter = placeConverter;
+
+  @override
+  RequestOperation<List<PlaceEntity>> searchPlaces(String query) {
+    return makeApiCall(() async {
+      // В реальном приложении здесь будет вызов API с фильтрацией
+      final allPlaces = await _apiClient.getPlaces();
+      final filteredPlaces = allPlaces.where((place) {
+        return place.name.toLowerCase().contains(query.toLowerCase()) ||
+            place.description.toLowerCase().contains(query.toLowerCase());
+      }).toList();
+
+      return _placeConverter.convertMultiple(filteredPlaces).toList();
+    });
+  }
+}
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\search\domain\repositories\i_search_repository.dart
+================================================================================
+
+// lib/features/search/domain/repositories/i_search_repository.dart
+import 'package:surf_places/core/domain/entities/result/request_operation.dart';
+import 'package:surf_places/features/common/domain/enitities/place_entity.dart';
+
+abstract interface class ISearchRepository {
+  RequestOperation<List<PlaceEntity>> searchPlaces(String query);
+}
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\search\domain\search_state.dart
+================================================================================
+
+// lib/features/search/domain/search_state.dart
+import 'package:flutter/foundation.dart';
+import 'package:surf_places/features/common/domain/enitities/place_entity.dart';
+
+@immutable
+sealed class SearchState {
+  const SearchState();
+}
+
+final class SearchStateInitial extends SearchState {
+  const SearchStateInitial();
+}
+
+final class SearchStateLoading extends SearchState {
+  const SearchStateLoading();
+}
+
+final class SearchStateEmpty extends SearchState {
+  const SearchStateEmpty();
+}
+
+final class SearchStateError extends SearchState {
+  final String message;
+  const SearchStateError(this.message);
+}
+
+final class SearchStateResults extends SearchState {
+  final List<PlaceEntity> places;
+  const SearchStateResults(this.places);
+}
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\search\ui\screens\search_model.dart
+================================================================================
+
+// lib/features/search/ui/screens/search_model.dart
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
+import 'package:surf_places/core/domain/entities/result/result.dart';
+import 'package:surf_places/features/common/domain/enitities/place_entity.dart';
+import 'package:surf_places/features/search/domain/repositories/i_search_repository.dart';
+import 'package:surf_places/features/search/domain/search_state.dart';
+
+class SearchModel implements ISearchModel {
+  final ISearchRepository _searchRepository;
+  final ValueNotifier<SearchState> _state = ValueNotifier(
+    const SearchStateInitial(),
+  );
+  Timer? _searchTimer;
+
+  SearchModel(this._searchRepository);
+
+  @override
+  ValueNotifier<SearchState> get stateNotifier => _state;
+
+  @override
+  void search(String query) {
+    // Отменяем предыдущий таймер, если он есть
+    _searchTimer?.cancel();
+
+    if (query.length < 3) {
+      _state.value = const SearchStateInitial();
+      return;
+    }
+
+    _state.value = const SearchStateLoading();
+
+    // Запускаем новый таймер
+    _searchTimer = Timer(const Duration(milliseconds: 500), () async {
+      final result = await _searchRepository.searchPlaces(query);
+
+      switch (result) {
+        case ResultOk(:final data as List<PlaceEntity>):
+          _state.value =
+              data.isEmpty
+                  ? const SearchStateEmpty()
+                  : SearchStateResults(data);
+        case ResultFailed(:final error):
+          _state.value = SearchStateError(error.toString());
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchTimer?.cancel();
+    _state.dispose();
+  }
+}
+
+abstract interface class ISearchModel {
+  ValueNotifier<SearchState> get stateNotifier;
+  void search(String query);
+  void dispose();
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\search\ui\screens\search_screen.dart
+================================================================================
+
+// lib/features/search/ui/screens/search_screen.dart
+import 'package:flutter/material.dart';
+import 'package:surf_places/assets/images/app_svg_icons.dart';
+import 'package:surf_places/assets/strings/app_strings.dart';
+import 'package:surf_places/features/common/domain/enitities/place_entity.dart';
+import 'package:surf_places/features/place_detail/ui/screens/place_detail_screen_builder.dart';
+import 'package:surf_places/features/search/ui/screens/search_wm.dart';
+import 'package:surf_places/features/search/domain/search_state.dart';
+import 'package:surf_places/uikit/images/svg_picture_widget.dart';
+import 'package:surf_places/uikit/themes/colors/app_color_theme.dart';
+import 'package:surf_places/uikit/themes/text/app_text_theme.dart';
+
+class SearchScreen extends StatefulWidget {
+  final ISearchWM wm;
+
+  const SearchScreen({required this.wm, super.key});
+
+  @override
+  State<SearchScreen> createState() => _SearchScreenState();
+}
+
+class _SearchScreenState extends State<SearchScreen> {
+  final _searchController = TextEditingController();
+  final _focusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _focusNode.dispose();
+    widget.wm.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    widget.wm.search(_searchController.text);
+  }
+
+  void _navigateToPlaceDetail(PlaceEntity place) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => PlaceDetailScreenBuilder(place: place),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorTheme = AppColorTheme.of(context);
+    final textTheme = AppTextTheme.of(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: _buildSearchField(colorTheme, textTheme),
+      ),
+      body: ValueListenableBuilder<SearchState>(
+        valueListenable: widget.wm.stateNotifier,
+        builder: (context, state, _) {
+          return switch (state) {
+            SearchStateInitial() => _buildInitialState(colorTheme, textTheme),
+            SearchStateLoading() => _buildLoadingState(),
+            SearchStateEmpty() => _buildEmptyState(colorTheme, textTheme),
+            SearchStateError(:final message) => _buildErrorState(message, colorTheme, textTheme),
+            SearchStateResults(:final places) => _buildResults(places, colorTheme, textTheme),
+          };
+        },
+      ),
+    );
+  }
+
+  Widget _buildSearchField(AppColorTheme colorTheme, AppTextTheme textTheme) {
+    return TextField(
+      controller: _searchController,
+      focusNode: _focusNode,
+      autofocus: true,
+      decoration: InputDecoration(
+        hintText: AppStrings.searchHint,
+        hintStyle: textTheme.text.copyWith(color: colorTheme.textSecondaryVariant),
+        border: InputBorder.none,
+        prefixIcon: Icon(Icons.search, color: colorTheme.textSecondary),
+        suffixIcon: _searchController.text.isNotEmpty
+            ? IconButton(
+                icon: SvgPictureWidget(
+                  AppSvgIcons.icClear,
+                  color: colorTheme.textSecondary,
+                ),
+                onPressed: () {
+                  _searchController.clear();
+                  _focusNode.requestFocus();
+                },
+              )
+            : null,
+      ),
+      style: textTheme.text.copyWith(color: colorTheme.textPrimary),
+    );
+  }
+
+  Widget _buildInitialState(AppColorTheme colorTheme, AppTextTheme textTheme) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SvgPictureWidget(
+            AppSvgIcons.icSearch,
+            color: colorTheme.inactive,
+            width: 64,
+            height: 64,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            AppStrings.searchInitialTitle,
+            style: textTheme.subtitle.copyWith(color: colorTheme.textSecondary),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            AppStrings.searchInitialDescription,
+            style: textTheme.small.copyWith(color: colorTheme.textSecondaryVariant),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLoadingState() {
+    return const Center(child: CircularProgressIndicator());
+  }
+
+  Widget _buildEmptyState(AppColorTheme colorTheme, AppTextTheme textTheme) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SvgPictureWidget(
+            AppSvgIcons.icEmptySearch,
+            color: colorTheme.inactive,
+            width: 64,
+            height: 64,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            AppStrings.searchEmptyTitle,
+            style: textTheme.subtitle.copyWith(color: colorTheme.textSecondary),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            AppStrings.searchEmptyDescription,
+            style: textTheme.small.copyWith(color: colorTheme.textSecondaryVariant),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState(String message, AppColorTheme colorTheme, AppTextTheme textTheme) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SvgPictureWidget(
+            AppSvgIcons.icNetworkException,
+            color: colorTheme.error,
+            width: 64,
+            height: 64,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            AppStrings.searchErrorTitle,
+            style: textTheme.subtitle.copyWith(color: colorTheme.textSecondary),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            message,
+            style: textTheme.small.copyWith(color: colorTheme.error),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildResults(List<PlaceEntity> places, AppColorTheme colorTheme, AppTextTheme textTheme) {
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: places.length,
+      itemBuilder: (context, index) {
+        final place = places[index];
+        return Card(
+          margin: const EdgeInsets.only(bottom: 16),
+          child: ListTile(
+            leading: place.images.isNotEmpty
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      place.images.first,
+                      width: 56,
+                      height: 56,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Icon(Icons.photo, size: 56, color: colorTheme.inactive),
+                    ),
+                  )
+                : Icon(Icons.photo, size: 56, color: colorTheme.inactive),
+            title: Text(place.name, style: textTheme.text.copyWith(color: colorTheme.textPrimary)),
+            subtitle: Text(
+              place.placeType.name.toLowerCase(),
+              style: textTheme.small.copyWith(color: colorTheme.textSecondaryVariant),
+            ),
+            onTap: () => _navigateToPlaceDetail(place),
+          ),
+        );
+      },
+    );
+  }
+}
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\search\ui\screens\search_screen_builder.dart
+================================================================================
+
+// lib/features/search/ui/screens/search_screen_builder.dart
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:surf_places/features/search/ui/search_dependencies.dart';
+import 'package:surf_places/features/search/ui/screens/search_screen.dart';
+import 'package:surf_places/features/search/ui/screens/search_wm.dart';
+
+class SearchScreenBuilder extends StatelessWidget {
+  const SearchScreenBuilder({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: SearchDependencies.providers(),
+      child: Builder(
+        builder: (context) => SearchScreen(wm: context.read<ISearchWM>()),
+      ),
+    );
+  }
+}
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\search\ui\screens\search_wm.dart
+================================================================================
+
+// lib/features/search/ui/screens/search_wm.dart
+import 'package:flutter/material.dart';
+import 'package:surf_places/features/search/domain/search_state.dart';
+import 'package:surf_places/features/search/ui/screens/search_model.dart';
+
+class SearchWM implements ISearchWM {
+  final ISearchModel _model;
+
+  SearchWM(this._model);
+
+  @override
+  ValueNotifier<SearchState> get stateNotifier => _model.stateNotifier;
+
+  @override
+  void search(String query) {
+    _model.search(query);
+  }
+
+  @override
+  void dispose() {
+    _model.dispose();
+  }
+}
+
+abstract interface class ISearchWM {
+  ValueNotifier<SearchState> get stateNotifier;
+  void search(String query);
+  void dispose();
+}
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\search\ui\search_dependencies.dart
+================================================================================
+
+// lib/features/search/ui/search_dependencies.dart
+import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
+import 'package:surf_places/api/service/api_client.dart';
+import 'package:surf_places/features/common/data/converters/place_converter.dart';
+import 'package:surf_places/features/common/data/converters/place_type_converter.dart';
+import 'package:surf_places/features/search/data/repositories/search_repository.dart';
+import 'package:surf_places/features/search/domain/repositories/i_search_repository.dart';
+import 'package:surf_places/features/search/ui/screens/search_model.dart';
+import 'package:surf_places/features/search/ui/screens/search_wm.dart';
+
+abstract class SearchDependencies {
+  static List<SingleChildWidget> providers() {
+    return [
+      Provider<ISearchRepository>(
+        create: (context) => SearchRepository(
+          apiClient: context.read<ApiClient>(),
+          placeConverter: PlaceDtoToEntityConverter(
+            placeTypeConverter: PlaceTypeDtoToEntityConverter(),
+          ),
+        ),
+      ),
+      Provider<ISearchModel>(
+        create: (context) => SearchModel(context.read<ISearchRepository>()),
+      ),
+      Provider<ISearchWM>(
+        create: (context) => SearchWM(context.read<ISearchModel>()),
+      ),
+    ];
+  }
+}
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\settings\model\settings_model.dart
+================================================================================
+
+// lib/features/settings/data/settings_model.dart
+import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+abstract class ISettingsModel {
+  ValueListenable<bool> get isDarkThemeNotifier;
+  bool get isDarkTheme;
+  Future<void> toggleTheme();
+  Future<void> resetOnboarding();
+}
+
+class SettingsModel implements ISettingsModel {
+  static const String _themeKey = 'is_dark_theme';
+  static const String _onboardingKey = 'onboarding_completed';
+
+  final _isDarkThemeNotifier = ValueNotifier<bool>(false);
+
+  SettingsModel() {
+    _loadThemePreference();
+  }
+
+  @override
+  ValueListenable<bool> get isDarkThemeNotifier => _isDarkThemeNotifier;
+
+  @override
+  bool get isDarkTheme => _isDarkThemeNotifier.value;
+
+  Future<void> _loadThemePreference() async {
+    final prefs = await SharedPreferences.getInstance();
+    _isDarkThemeNotifier.value = prefs.getBool(_themeKey) ?? false;
+  }
+
+  @override
+  Future<void> toggleTheme() async {
+    final newValue = !_isDarkThemeNotifier.value;
+    _isDarkThemeNotifier.value = newValue;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_themeKey, newValue);
+  }
+
+  @override
+  Future<void> resetOnboarding() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_onboardingKey, false);
+  }
+
+  void dispose() {
+    _isDarkThemeNotifier.dispose();
+  }
+}
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\settings\ui\settings_screen.dart
+================================================================================
+
+// lib/features/settings/ui/settings_screen.dart
+import 'package:flutter/material.dart';
+import 'package:surf_places/assets/images/app_svg_icons.dart';
+import 'package:surf_places/assets/strings/app_strings.dart';
+import 'package:surf_places/features/settings/viewmodel/settings_wm.dart';
+import 'package:surf_places/uikit/images/svg_picture_widget.dart';
+import 'package:surf_places/uikit/themes/colors/app_color_theme.dart';
+import 'package:surf_places/uikit/themes/colors/app_colors.dart';
+import 'package:surf_places/uikit/themes/text/app_text_theme.dart';
+
+class SettingsScreen extends StatelessWidget {
+  final ISettingsWM wm;
+
+  const SettingsScreen({required this.wm, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorTheme = AppColorTheme.of(context);
+    final textTheme = AppTextTheme.of(context);
+
+    return Scaffold(
+      appBar: AppBar(title: Center(child: const Text(AppStrings.settingsScreenTitle))),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          // Внешний вид
+          // Text(
+          //   AppStrings.settingsAppearanceSection,
+          //   style: textTheme.subtitle.copyWith(color: colorTheme.textSecondary),
+          // ),
+          const SizedBox(height: 8),
+
+          // Переключатель темы
+          ValueListenableBuilder<bool>(
+            valueListenable: wm.isDarkThemeNotifier,
+            builder: (context, isDarkTheme, _) {
+              return SwitchListTile(
+                title: Text(
+                  AppStrings.settingsThemeToggle,
+                  style: textTheme.text.copyWith(
+                    color: colorTheme.textSecondary,
+                  ),
+                ),
+                value: isDarkTheme,
+                onChanged: (_) => wm.toggleTheme(),
+                activeColor: colorTheme.accent,
+              );
+            },
+          ),
+          const SizedBox(height: 8),
+
+          // Кнопка сброса онбординга
+          ListTile(
+            title: Text(
+              AppStrings.settingsResetOnboarding,
+              // style: textTheme.text.copyWith(color: AppColors.colorBlackGreen),
+            ),
+            trailing: SvgPictureWidget(
+              AppSvgIcons.icInfo,
+              color: AppColors.colorBlackGreen,
+            ),
+            onTap: () => wm.resetOnboarding(context),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\settings\ui\settings_screen_builder.dart
+================================================================================
+
+// lib/features/settings/ui/settings_screen_builder.dart
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:surf_places/features/settings/model/settings_model.dart';
+import 'package:surf_places/features/settings/ui/settings_screen.dart';
+import 'package:surf_places/features/settings/viewmodel/settings_wm.dart';
+
+class SettingsScreenBuilder extends StatelessWidget {
+  const SettingsScreenBuilder({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        // Provider<ISettingsModel>(create: (_) => SettingsModel()),
+        Provider<ISettingsWM>(create: (context) => SettingsWM(context.read<ISettingsModel>())),
+      ],
+      child: Builder(
+        builder: (context) => SettingsScreen(wm: context.read<ISettingsWM>()),
+      ),
+    );
+  }
+}
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\settings\viewmodel\settings_wm.dart
+================================================================================
+
+// lib/features/settings/ui/settings_wm.dart
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:surf_places/features/onboarding/ui/screens/onboarding_screen_builder.dart';
+import 'package:surf_places/features/settings/model/settings_model.dart';
+
+abstract class ISettingsWM {
+  ValueListenable<bool> get isDarkThemeNotifier;
+  void toggleTheme();
+  void resetOnboarding(BuildContext context);
+}
+
+class SettingsWM implements ISettingsWM {
+  final ISettingsModel _model;
+
+  SettingsWM(this._model);
+
+  @override
+  ValueListenable<bool> get isDarkThemeNotifier => _model.isDarkThemeNotifier;
+
+  @override
+  void toggleTheme() {
+    _model.toggleTheme();
+  }
+
+  @override
+  void resetOnboarding(BuildContext context) {
+    // _model.resetOnboarding().then((_) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(content: Text('Onboarding has been reset')),
+    //   );
+    // });
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => OnboardingScreenBuilder()));
+  }
+}
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\splash\ui\screens\splash_screen.dart
+================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:surf_places/assets/images/app_svg_icons.dart'; // Убедитесь, что путь правильный
+import 'package:surf_places/features/onboarding/ui/screens/onboarding_screen_builder.dart';
+import 'package:surf_places/features/tabs_screen/tabs_screen.dart'; // Убедитесь, что путь к TabsScreen правильный
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:async';
+
+import 'package:surf_places/uikit/images/svg_picture_widget.dart';
+
+/// Экран заставки.
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  // Ключ для SharedPreferences, чтобы проверить, был ли показан онбординг
+  static const String _onboardingCompletedKey = 'onboarding_completed';
+
+  @override
+  void initState() {
+    super.initState();
+    _navigateAfterDelay();
+  }
+
+  /// Определяет, куда нужно перейти после сплэш-скрина.
+  Future<void> _navigateAfterDelay() async {
+    // Ждем 2 секунды
+    await Future.delayed(const Duration(seconds: 2));
+
+    // Проверяем, завершен ли онбординг
+    final prefs = await SharedPreferences.getInstance();
+    final isOnboardingCompleted =
+        prefs.getBool(_onboardingCompletedKey) ?? false;
+
+    // Переход к нужному экрану
+    // Используем context.mounted для проверки, что виджет еще в дереве
+    if (!mounted) return;
+    if (isOnboardingCompleted) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const TabsScreen()),
+      );
+    } else {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const OnboardingScreenBuilder(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor:
+          Theme.of(context).scaffoldBackgroundColor, // Или цвет из вашей темы
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFFCDD3D), Color(0xFF4CAF50)],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+        ),
+        child: Center(
+          // Используйте ваш SVG логотип
+          child: SvgPictureWidget(
+            AppSvgIcons.icSplashLogo,
+            color: Colors.white,
+            width: 150,
+            height: 150,
+          ), // Или SvgPicture.asset если используете flutter_svg и нужен SVG
+          // Если у вас нет готового виджета для SVG логотипа, временно можно использовать
+          // Icon или просто Container с цветом
+          // child: Icon(Icons.location_on, size: 100, color: Colors.blue), // Пример
+        ),
+      ),
+    );
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\features\tabs_screen\tabs_screen.dart
+================================================================================
+
+// lib/features/tabs_screen/tabs_screen.dart
+import 'package:flutter/material.dart';
+import 'package:surf_places/assets/strings/app_strings.dart';
+import 'package:surf_places/features/favorites/ui/screens/favorites_screen.dart';
+import 'package:surf_places/features/map/ui/screens/map_screen_builder.dart';
+import 'package:surf_places/features/places/ui/screens/places_screen_builder.dart';
+import 'package:surf_places/features/settings/ui/settings_screen_builder.dart';
+import 'package:surf_places/uikit/images/svg_picture_widget.dart';
+
+class TabsScreen extends StatefulWidget {
+  const TabsScreen({super.key});
+
+  @override
+  State<TabsScreen> createState() => _TabsScreenState();
+}
+
+class _TabsScreenState extends State<TabsScreen> {
+  int _currentIndex = 0;
+
+  final List<Widget> _pages = [
+    const PlacesScreenBuilder(),
+    Container(),
+    const FavoritesScreen(),
+    const SettingsScreenBuilder(),
+  ];
+
+  void _onTabTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _pages[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: _onTabTapped,
+        items: [
+          BottomNavigationBarItem(
+            icon: SvgPictureWidget('assets/icons/list.svg'),
+            activeIcon: SvgPictureWidget('assets/icons/list_full.svg'),
+            label: AppStrings.placesScreenBottomNavPlaces,
+          ),
+          BottomNavigationBarItem(
+            icon: SvgPictureWidget('assets/icons/map.svg'),
+            activeIcon: SvgPictureWidget('assets/icons/map_full.svg'),
+            label: AppStrings.placesScreenBottomNavPlaces,
+          ),
+          BottomNavigationBarItem(
+            icon: SvgPictureWidget('assets/icons/heart.svg'),
+            activeIcon: SvgPictureWidget('assets/icons/heart_full.svg'),
+            label: AppStrings.placesScreenBottomNavFavorites,
+          ),
+          BottomNavigationBarItem(
+            icon: SvgPictureWidget('assets/icons/settings.svg'),
+            activeIcon: SvgPictureWidget('assets/icons/settings_full.svg'),
+            label: AppStrings.placesScreenBottomNavSettings,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\main.dart
+================================================================================
+
+import 'package:surf_places/runner.dart';
+
+void main() => run();
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\runner.dart
+================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:surf_places/features/app/app.dart';
+
+Future<void> run() async {
+  runApp(const App());
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\uikit\buttons\back_button_widget.dart
+================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:surf_places/assets/images/app_svg_icons.dart';
+import 'package:surf_places/uikit/buttons/button_rounded.dart';
+import 'package:surf_places/uikit/themes/colors/app_color_theme.dart';
+
+/// {@template back_button_widget.class}
+/// Кнопка назад для аппбара.
+/// {@endtemplate}
+class BackButtonWidget extends StatelessWidget {
+  final VoidCallback? onPressed;
+
+  /// {@macro back_button_widget.class}
+  const BackButtonWidget({this.onPressed, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorTheme = AppColorTheme.of(context);
+
+    return ButtonRounded(
+      size: 32,
+      backgroundColor: colorTheme.scaffold,
+      radius: 50,
+      icon: AppSvgIcons.icArrow,
+      iconColor: colorTheme.textSecondary,
+      onPressed: onPressed ?? Navigator.of(context).pop,
+    );
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\uikit\buttons\button_rounded.dart
+================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:surf_places/uikit/images/svg_picture_widget.dart';
+
+/// {@template button_rounded.class}
+/// Элемент интерфейса - небольшая закругленная квадратная или круглая кнопка с фиксированными размерами,
+/// используется в поле поиска, как кнопка назад с детальной страницы, на карте.
+/// {@endtemplate}
+class ButtonRounded extends StatelessWidget {
+  final double size;
+  final Color backgroundColor;
+  final double radius;
+  final String icon;
+  final Color iconColor;
+  final VoidCallback onPressed;
+  final double? elevation;
+
+  /// {@macro button_rounded.class}
+  const ButtonRounded({
+    required this.size,
+    required this.backgroundColor,
+    required this.radius,
+    required this.icon,
+    required this.iconColor,
+    required this.onPressed,
+    this.elevation,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ConstrainedBox(
+      constraints: BoxConstraints.tight(Size(size, size)),
+      child: TextButton(
+        onPressed: onPressed,
+        style: TextButton.styleFrom(
+          backgroundColor: backgroundColor,
+          elevation: elevation,
+          padding: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(radius))),
+        ),
+        child: SvgPictureWidget(icon, color: iconColor),
+      ),
+    );
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\uikit\buttons\entity\button_state.dart
+================================================================================
+
+/// Состояние кнопки.
+enum ButtonState {
+  /// Кнопка активна.
+  active,
+
+  /// Кнопка занята (идет загрузка).
+  loading,
+
+  /// Кнопка неактивна.
+  inactive,
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\uikit\buttons\icon_action_button.dart
+================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:surf_places/uikit/images/svg_picture_widget.dart';
+import 'package:surf_places/uikit/themes/colors/app_color_theme.dart';
+
+/// {@template icon_action_button.class}
+/// Кнопки действий для карточек поверх картинки.
+/// {@endtemplate}
+class IconActionButton extends StatelessWidget {
+  final String svgPath;
+  final double size;
+  final Color? color; // Сделайте color необязательным, если хотите использовать цвет темы по умолчанию
+  final VoidCallback? onPressed;
+
+  /// {@macro icon_action_button.class}
+  const IconActionButton({
+    required this.svgPath,
+    this.color, // Принимаем опциональный цвет
+    this.onPressed,
+    this.size = 24,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorTheme = AppColorTheme.of(context);
+    // Определяем цвет иконки: либо переданный, либо из темы (например, colorTheme.icon)
+    final iconColor =
+        color ?? colorTheme.icon; // Используйте нужное свойство темы
+    return SizedBox(
+      width: 32,
+      height: 32,
+      child: TextButton(
+        onPressed: onPressed,
+        style: TextButton.styleFrom(
+          elevation: 0,
+          padding: const EdgeInsets.all(4),
+          shape: const CircleBorder(),
+        ),
+        child: SvgPictureWidget(
+          svgPath,
+          color: iconColor,
+          width: size,
+          height: size,
+        ),
+      ),
+    );
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\uikit\buttons\main_button.dart
+================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:surf_places/uikit/buttons/entity/button_state.dart';
+import 'package:surf_places/uikit/themes/colors/app_color_theme.dart';
+import 'package:surf_places/uikit/themes/text/app_text_theme.dart';
+
+/// Базовый виджет для кнопок с основным стилем.
+class MainButton extends StatelessWidget {
+  /// Состояние кнопки
+  ///
+  /// При состоянии, отличном от [ButtonState.active], не работает [onPressed].
+  final ButtonState state;
+
+  /// Колбек нажатия на кнопку.
+  final VoidCallback onPressed;
+
+  /// Контент кнопки.
+  final Widget child;
+
+  /// {@macro main_button.class}
+  const MainButton({required this.onPressed, required this.child, this.state = ButtonState.active, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorTheme = AppColorTheme.of(context);
+    final textTheme = AppTextTheme.of(context);
+    final textStyle = textTheme.button;
+    final isLoading = state == ButtonState.loading;
+
+    return FilledButton(
+      onPressed: state == ButtonState.active ? onPressed : null,
+      style: ButtonStyle(
+        textStyle: WidgetStatePropertyAll(textStyle),
+        backgroundColor: WidgetStateProperty.resolveWith((states) {
+          return switch (state) {
+            ButtonState.inactive => colorTheme.inactiveVariant,
+            _ => colorTheme.accent,
+          };
+        }),
+        foregroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+          return switch (state) {
+            ButtonState.inactive => colorTheme.inactive,
+            _ => colorTheme.neutralWhite,
+          };
+        }),
+        padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 20)),
+        fixedSize: WidgetStatePropertyAll(Size.fromHeight(48)),
+        shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12)))),
+        splashFactory: NoSplash.splashFactory,
+      ),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Visibility(
+            visible: !isLoading,
+            maintainState: true,
+            maintainAnimation: true,
+            maintainSize: true,
+            child: child,
+          ),
+          if (isLoading) const Positioned(child: _Loader()),
+        ],
+      ),
+    );
+  }
+}
+
+/// Виджет загрузки для [MainButton].
+class _Loader extends StatelessWidget {
+  const _Loader();
+
+  @override
+  Widget build(BuildContext context) {
+    final colorTheme = AppColorTheme.of(context);
+
+    return Center(
+      child: SizedBox.square(
+        dimension: 24,
+        child: CircularProgressIndicator(color: colorTheme.neutralWhite, strokeWidth: 2, strokeCap: StrokeCap.round),
+      ),
+    );
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\uikit\buttons\text_button_widget.dart
+================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:surf_places/uikit/themes/colors/app_color_theme.dart';
+import 'package:surf_places/uikit/themes/text/app_text_theme.dart';
+
+/// {@template text_button_widget.class}
+/// Текстовая кнопка.
+/// {@endtemplate}
+class TextButtonWidget extends StatelessWidget {
+  final String title;
+  final VoidCallback onPressed;
+  final Color? color;
+  final EdgeInsetsGeometry? padding;
+
+  /// {@macro text_button_widget.class}
+  const TextButtonWidget({required this.title, required this.onPressed, this.color, this.padding, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorTheme = AppColorTheme.of(context);
+    final textTheme = AppTextTheme.of(context);
+
+    return Padding(
+      padding: padding ?? const EdgeInsets.all(8),
+      child: TextButton(
+        onPressed: onPressed,
+        style: TextButton.styleFrom(
+          foregroundColor: color ?? colorTheme.accent,
+          textStyle: textTheme.text,
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+        ),
+        child: Text(title),
+      ),
+    );
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\uikit\images\network_image_widget.dart
+================================================================================
+
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:surf_places/assets/images/app_svg_icons.dart';
+import 'package:surf_places/uikit/images/svg_picture_widget.dart';
+import 'package:surf_places/uikit/themes/colors/app_color_theme.dart';
+
+/// {@template network_image_widget.class}
+/// Загружает картинку из сети.
+/// {@endtemplate}
+class NetworkImageWidget extends StatelessWidget {
+  final String imgUrl;
+  final double height;
+
+  /// {@macro network_image_widget.class}
+  const NetworkImageWidget({required this.imgUrl, required this.height, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return CachedNetworkImage(
+      imageUrl: imgUrl,
+      imageBuilder: (_, imageProvider) => _ImageBuilder(imageProvider: imageProvider, height: height),
+      placeholder: (_, __) => _ImagePlaceholder(height: height),
+      errorWidget: (_, __, ___) => _ImagePlaceholder(height: height),
+    );
+  }
+}
+
+/// Загруженная картинка из сети.
+class _ImageBuilder extends StatelessWidget {
+  final ImageProvider imageProvider;
+  final double height;
+
+  const _ImageBuilder({required this.imageProvider, required this.height});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: height,
+      child: DecoratedBox(decoration: BoxDecoration(image: DecorationImage(image: imageProvider, fit: BoxFit.cover))),
+    );
+  }
+}
+
+/// Плейсхолдер на время загрузки и если есть ошибка.
+class _ImagePlaceholder extends StatelessWidget {
+  final double height;
+  const _ImagePlaceholder({required this.height});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: height,
+      child: Center(
+        child: SvgPictureWidget(AppSvgIcons.icPhoto, color: AppColorTheme.of(context).inactive, width: 64, height: 64),
+      ),
+    );
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\uikit\images\svg_picture_widget.dart
+================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:surf_places/uikit/themes/colors/app_color_theme.dart';
+
+/// {@template svg_picture_widget.class}
+/// Компонент для отображения SVG изображения.
+/// {@endtemplate}
+class SvgPictureWidget extends StatelessWidget {
+  /// Путь до ассета с svg.
+  final String svgPath;
+
+  /// Цвет иконки.
+  final Color? color;
+
+  /// Ширина иконки.
+  final double? width;
+
+  /// Высота иконки.
+  final double? height;
+
+  /// Фит иконки.
+  final BoxFit fit;
+
+  /// {@macro svg_picture_widget.class}
+  const SvgPictureWidget(
+    this.svgPath, {
+    this.color,
+    this.width,
+    this.height,
+    this.fit = BoxFit.contain,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorTheme = AppColorTheme.of(context);
+
+    final color = this.color;
+
+    final iconColor = color ?? colorTheme.textPrimary;
+
+    final colorFilter = ColorFilter.mode(iconColor, BlendMode.srcIn);
+
+    return SvgPicture.asset(
+      svgPath,
+      width: width,
+      height: height,
+      fit: fit,
+      colorFilter: colorFilter,
+    );
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\uikit\loading\app_loader.dart
+================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:surf_places/uikit/loading/app_loader_sizes.dart';
+import 'package:surf_places/uikit/themes/colors/app_color_theme.dart';
+
+/// Основной виджет для круглого индикатора загрузки.
+class AppLoader extends StatelessWidget {
+  /// Размер.
+  final AppLoaderSizes size;
+
+  /// Цвет индикатора.
+  final Color? color;
+
+  /// Фон индикатора.
+  final Color? backgroundColor;
+
+  /// Флаг для полноэкранного лоадера.
+  final bool isForScreen;
+
+  /// {@template app_loader.class}
+  /// Создать экземпляр [AppLoader].
+  /// {@endtemplate}
+  const AppLoader._({required this.size, this.color, this.backgroundColor, this.isForScreen = false});
+
+  /// Фабрика для лоадера.
+  factory AppLoader.create({required AppLoaderSizes size, Color? color, Color? backgroundColor, bool? isForScreen}) {
+    return AppLoader._(size: size, color: color, backgroundColor: backgroundColor, isForScreen: isForScreen ?? false);
+  }
+
+  /// Фабрика для для полноэкранного лоадера.
+  factory AppLoader.forScreen() {
+    return const AppLoader._(size: AppLoaderSizes.large, isForScreen: true);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorTheme = AppColorTheme.of(context);
+
+    return Center(
+      child: SizedBox.square(
+        dimension: size.size,
+        child: CircularProgressIndicator(
+          backgroundColor: isForScreen ? Colors.transparent : backgroundColor,
+          color: color ?? colorTheme.accent,
+          strokeWidth: size.strokeWidth,
+          strokeCap: StrokeCap.round,
+        ),
+      ),
+    );
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\uikit\loading\app_loader_sizes.dart
+================================================================================
+
+/// Размеры индикатора загрузки.
+enum AppLoaderSizes {
+  /// Большой.
+  large(strokeWidth: _strokeWidthLarge, size: _sizeLarge),
+
+  /// Средний.
+  medium(strokeWidth: _strokeWidthMedium, size: _sizeMedium),
+
+  /// Маленький.
+  small(strokeWidth: _strokeWidthSmall, size: _sizeSmall);
+
+  /// Толщина линии.
+  final double strokeWidth;
+
+  /// Размер.
+  final double size;
+
+  const AppLoaderSizes({required this.strokeWidth, required this.size});
+}
+
+const _strokeWidthLarge = 4.0;
+const _sizeLarge = 40.0;
+const _strokeWidthMedium = 2.67;
+const _sizeMedium = 26.67;
+const _strokeWidthSmall = 1.67;
+const _sizeSmall = 16.67;
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\uikit\loading\skeleton.dart
+================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:surf_places/uikit/themes/colors/app_color_theme.dart';
+
+/// {@template skeleton.class}
+/// Виджет-скелетон.
+/// {@endtemplate}
+class Skeleton extends StatelessWidget {
+  final double? width;
+  final double? height;
+  final Color? background;
+  final double? radius;
+  final BorderRadius? borderRadius;
+
+  /// {@macro skeleton.class}
+  const Skeleton({super.key, this.width, this.height, this.background, this.radius, this.borderRadius});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorTheme = AppColorTheme.of(context);
+
+    return SizedBox(
+      width: width,
+      height: height,
+      child: DecoratedBox(
+        decoration: BoxDecoration(color: background ?? colorTheme.surface, borderRadius: borderRadius),
+      ),
+    );
+  }
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\uikit\themes\app_theme_data.dart
+================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:surf_places/uikit/themes/colors/app_color_theme.dart';
+import 'package:surf_places/uikit/themes/text/app_text_theme.dart';
+
+/// Class of the app themes data.
+abstract class AppThemeData {
+  static const _darkColorTheme = AppColorTheme.dark();
+  static const _lightColorTheme = AppColorTheme.light();
+  static final _textTheme = AppTextTheme.base();
+
+  /// Dark theme configuration.
+  static final darkTheme = ThemeData(
+    extensions: [_darkColorTheme, _textTheme],
+    brightness: Brightness.dark,
+    primaryColor: _darkColorTheme.scaffold,
+    scaffoldBackgroundColor: _darkColorTheme.scaffold,
+    appBarTheme: AppBarTheme(
+      backgroundColor: _darkColorTheme.scaffold,
+      elevation: 0,
+      surfaceTintColor: Colors.transparent,
+      iconTheme: IconThemeData(color: _darkColorTheme.icon),
+      titleTextStyle: _textTheme.subtitle.copyWith(color: _darkColorTheme.textPrimary),
+    ),
+    dividerTheme: DividerThemeData(color: _darkColorTheme.divider.withValues(alpha: 0.56), space: 1, thickness: 0.4),
+    sliderTheme: SliderThemeData(
+      trackHeight: 2,
+      activeTrackColor: _darkColorTheme.accent,
+      inactiveTrackColor: _darkColorTheme.inactive,
+      activeTickMarkColor: Colors.transparent,
+      inactiveTickMarkColor: Colors.transparent,
+      thumbColor: _darkColorTheme.neutralWhite,
+      overlayShape: SliderComponentShape.noOverlay,
+      tickMarkShape: SliderTickMarkShape.noTickMark,
+      showValueIndicator: ShowValueIndicator.never,
+      padding: EdgeInsets.zero,
+    ),
+  );
+
+  /// Light theme configuration.
+  static final lightTheme = ThemeData(
+    extensions: [_lightColorTheme, _textTheme],
+    brightness: Brightness.light,
+    primaryColor: _lightColorTheme.neutralWhite,
+    scaffoldBackgroundColor: _lightColorTheme.scaffold,
+    appBarTheme: AppBarTheme(
+      backgroundColor: _lightColorTheme.scaffold,
+      elevation: 0,
+      surfaceTintColor: Colors.transparent,
+      iconTheme: IconThemeData(color: _lightColorTheme.icon),
+      titleTextStyle: _textTheme.subtitle.copyWith(color: _lightColorTheme.textPrimary),
+    ),
+    dividerTheme: DividerThemeData(color: _lightColorTheme.divider.withValues(alpha: 0.56), space: 1, thickness: 0.4),
+    sliderTheme: SliderThemeData(
+      trackHeight: 2,
+      activeTrackColor: _lightColorTheme.accent,
+      inactiveTrackColor: _lightColorTheme.inactive,
+      activeTickMarkColor: Colors.transparent,
+      inactiveTickMarkColor: Colors.transparent,
+      thumbColor: _lightColorTheme.neutralWhite,
+      overlayShape: SliderComponentShape.noOverlay,
+      tickMarkShape: SliderTickMarkShape.noTickMark,
+      showValueIndicator: ShowValueIndicator.never,
+      padding: EdgeInsets.zero,
+    ),
+  );
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\uikit\themes\colors\app_colors.dart
+================================================================================
+
+// ignore_for_file: member-ordering
+
+import 'package:flutter/material.dart';
+
+/// {@template app_colors.class}
+/// Цвета приложения.
+/// {@endtemplate}
+abstract class AppColors {
+  /// Цвета и названия из макета фигмы.
+  static const colorWhite = Colors.white;
+  static const colorBackground = Color(0xffF5F5F5);
+  static const colorSecondary = Color(0xff3B3E5B);
+  static const colorSecondary2 = Color(0xff7C7E92);
+  static const colorInactiveBlack = Color.fromRGBO(124, 126, 146, 0.56);
+  static const colorPicker = Color(0xFF8CC152);
+
+  static const colorWhiteGreen = Color(0xff4CAF50);
+  static const colorWhiteGreen2 = Color(0xff68B74E); // сплэш экран градиент
+  static const colorWhiteYellow = Color(0xffFCDD3D);
+  static const colorWhiteYellow2 = Color(0xffB8CC45); // сплэш экран градиент
+  static const colorWhiteError = Color(0xffEF4343);
+  static const colorWhiteMain = Color(0xff252849);
+
+  static const colorBlackGreen = Color(0xff6ADA6F);
+  static const colorBlackGreen2 = Color(0xff6CB84D); // сплэш экран градиент
+  static const colorBlackYellow = Color(0xffFFE769);
+  static const colorBlackYellow2 = Color(0xffBBCD45); // сплэш экран градиент
+  static const colorBlackError = Color(0xffCF2A2A);
+  static const colorBlackDark = Color(0xff1A1A20);
+  static const colorBlackMain = Color(0xff21222C);
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\uikit\themes\colors\app_color_theme.dart
+================================================================================
+
+// ignore_for_file: avoid-non-null-assertion
+
+import 'package:flutter/material.dart';
+import 'package:surf_places/uikit/themes/colors/app_colors.dart';
+
+/// {@template app_color_theme.class}
+/// App brand color scheme.
+///
+/// This extension is in sync with base [ThemeData] and [ColorScheme].
+///
+/// Use case:
+///
+/// ```dart
+/// final colorScheme = CyberdomColorScheme.of(context);
+///
+/// return Container(color: colorScheme.primary);
+/// ```
+/// {@endtemplate}
+@immutable
+class AppColorTheme extends ThemeExtension<AppColorTheme> {
+  /// Returns [AppColorTheme] from [context].
+  static AppColorTheme of(BuildContext context) =>
+      Theme.of(context).extension<AppColorTheme>() ?? _throwThemeNotFound(context);
+
+  final Color accent;
+  final Color background;
+  final Color divider;
+  final Color error;
+  final Color icon;
+  final Color inactive;
+  final Color inactiveVariant;
+  final Color neutralWhite;
+  final Color scaffold;
+  final Color secondary;
+  final Color secondaryVariant;
+  final Color surface;
+  final Color textInactive;
+  final Color textPrimary;
+  final Color textSecondary;
+  final Color textSecondaryVariant;
+
+  const AppColorTheme._({
+    required this.scaffold,
+    required this.background,
+    required this.surface,
+    required this.accent,
+    required this.error,
+    required this.inactive,
+    required this.inactiveVariant,
+    required this.secondary,
+    required this.secondaryVariant,
+    required this.divider,
+    required this.icon,
+    required this.neutralWhite,
+    required this.textPrimary,
+    required this.textSecondary,
+    required this.textSecondaryVariant,
+    required this.textInactive,
+  });
+
+  /// Base dark theme version.
+  const AppColorTheme.dark()
+    : scaffold = AppColors.colorBlackMain,
+      // background = AppColors.colorBackground,
+      background = AppColors.colorBlackDark,
+      surface = AppColors.colorBlackDark,
+      accent = AppColors.colorBlackGreen,
+      error = AppColors.colorBlackError,
+      inactive = AppColors.colorInactiveBlack,
+      inactiveVariant = AppColors.colorBlackDark,
+      secondary = AppColors.colorSecondary,
+      secondaryVariant = AppColors.colorSecondary2,
+      divider = AppColors.colorInactiveBlack,
+      icon = AppColors.colorWhite,
+      neutralWhite = AppColors.colorWhite,
+      textPrimary = AppColors.colorWhite,
+      textSecondary = AppColors.colorWhite,
+      textSecondaryVariant = AppColors.colorSecondary2,
+      textInactive = AppColors.colorInactiveBlack;
+
+  /// Base light theme version.
+  const AppColorTheme.light()
+    : scaffold = AppColors.colorWhite,
+      // background = AppColors.colorBackground,
+      background = AppColors.colorBackground,
+      surface = AppColors.colorBackground,
+      accent = AppColors.colorWhiteGreen,
+      error = AppColors.colorWhiteError,
+      inactive = AppColors.colorInactiveBlack,
+      inactiveVariant = AppColors.colorBackground,
+      secondary = AppColors.colorSecondary,
+      secondaryVariant = AppColors.colorSecondary2,
+      divider = AppColors.colorInactiveBlack,
+      icon = AppColors.colorWhite,
+      neutralWhite = AppColors.colorWhite,
+      textPrimary = AppColors.colorWhiteMain,
+      textSecondary = AppColors.colorSecondary,
+      textSecondaryVariant = AppColors.colorSecondary2,
+      textInactive = AppColors.colorInactiveBlack;
+
+  @override
+  ThemeExtension<AppColorTheme> copyWith({
+    Color? scaffold,
+    Color? background,
+    Color? surface,
+    Color? accent,
+    Color? error,
+    Color? inactive,
+    Color? inactiveVariant,
+    Color? secondary,
+    Color? secondaryVariant,
+    Color? divider,
+    Color? icon,
+    Color? neutralWhite,
+    Color? textPrimary,
+    Color? textSecondary,
+    Color? textSecondaryVariant,
+    Color? textInactive,
+  }) {
+    return AppColorTheme._(
+      scaffold: scaffold ?? this.scaffold,
+      background: background ?? this.background,
+      surface: surface ?? this.surface,
+      accent: accent ?? this.accent,
+      error: error ?? this.error,
+      inactive: inactive ?? this.inactive,
+      inactiveVariant: inactiveVariant ?? this.inactiveVariant,
+      secondary: secondary ?? this.secondary,
+      secondaryVariant: secondaryVariant ?? this.secondaryVariant,
+      divider: divider ?? this.divider,
+      icon: icon ?? this.icon,
+      neutralWhite: neutralWhite ?? this.neutralWhite,
+      textPrimary: textPrimary ?? this.textPrimary,
+      textSecondary: textSecondary ?? this.textSecondary,
+      textSecondaryVariant: textSecondaryVariant ?? this.textSecondaryVariant,
+      textInactive: textInactive ?? this.textInactive,
+    );
+  }
+
+  @override
+  ThemeExtension<AppColorTheme> lerp(ThemeExtension<AppColorTheme>? other, double t) {
+    if (other is! AppColorTheme) {
+      return this;
+    }
+
+    return AppColorTheme._(
+      scaffold: Color.lerp(scaffold, other.scaffold, t)!,
+      background: Color.lerp(background, other.background, t)!,
+      surface: Color.lerp(surface, other.surface, t)!,
+      accent: Color.lerp(accent, other.accent, t)!,
+      error: Color.lerp(error, other.error, t)!,
+      inactive: Color.lerp(inactive, other.inactive, t)!,
+      inactiveVariant: Color.lerp(inactiveVariant, other.inactiveVariant, t)!,
+      secondary: Color.lerp(secondary, other.secondary, t)!,
+      secondaryVariant: Color.lerp(secondaryVariant, other.secondaryVariant, t)!,
+      divider: Color.lerp(divider, other.divider, t)!,
+      icon: Color.lerp(icon, other.icon, t)!,
+      neutralWhite: Color.lerp(neutralWhite, other.neutralWhite, t)!,
+      textPrimary: Color.lerp(textPrimary, other.textPrimary, t)!,
+      textSecondary: Color.lerp(textSecondary, other.textSecondary, t)!,
+      textSecondaryVariant: Color.lerp(textSecondaryVariant, other.textSecondaryVariant, t)!,
+      textInactive: Color.lerp(textInactive, other.textInactive, t)!,
+    );
+  }
+}
+
+Never _throwThemeNotFound(BuildContext context) => throw Exception('$AppColorTheme not found in $context');
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\uikit\themes\text\app_text_style.dart
+================================================================================
+
+import 'package:flutter/painting.dart';
+
+const _fontFamily = 'Roboto';
+
+/// Стили текстов на основе фигмы.
+enum AppTextStyle {
+  largeTitle(TextStyle(fontSize: 32, fontWeight: FontWeight.w700, height: 1.125, fontFamily: _fontFamily)),
+  title(TextStyle(fontSize: 24, fontWeight: FontWeight.w700, height: 1.2, fontFamily: _fontFamily)),
+  subtitle(TextStyle(fontSize: 18, fontWeight: FontWeight.w500, height: 1.33, fontFamily: _fontFamily)),
+  textMedium(TextStyle(fontSize: 16, fontWeight: FontWeight.w500, height: 1.25, fontFamily: _fontFamily)),
+  text(TextStyle(fontSize: 16, fontWeight: FontWeight.w400, height: 1.25, fontFamily: _fontFamily)),
+  smallBold(TextStyle(fontSize: 14, fontWeight: FontWeight.w700, height: 1.29, fontFamily: _fontFamily)),
+  small(TextStyle(fontSize: 14, fontWeight: FontWeight.w400, height: 1.29, fontFamily: _fontFamily)),
+  superSmallMedium(TextStyle(fontSize: 12, fontWeight: FontWeight.w500, height: 1.33, fontFamily: _fontFamily)),
+  superSmall(TextStyle(fontSize: 12, fontWeight: FontWeight.w400, height: 1.33, fontFamily: _fontFamily)),
+  button(
+    TextStyle(fontSize: 14, fontWeight: FontWeight.w700, letterSpacing: 0.3, height: 1.29, fontFamily: _fontFamily),
+  );
+
+  /// Text style value.
+  final TextStyle value;
+
+  const AppTextStyle(this.value);
+}
+
+
+================================================================================
+File: D:\Program Files\development\new_app_2\lib\uikit\themes\text\app_text_theme.dart
+================================================================================
+
+// ignore_for_file: avoid-non-null-assertion
+
+import 'package:flutter/material.dart';
+import 'package:surf_places/uikit/themes/text/app_text_style.dart';
+
+/// {@template app_text_theme.class}
+/// Тема для текстов приложения.
+/// {@endtemplate}
+class AppTextTheme extends ThemeExtension<AppTextTheme> {
+  /// Возвращает тему из контекста.
+  static AppTextTheme of(BuildContext context) {
+    return Theme.of(context).extension<AppTextTheme>() ?? _throwThemeNotFound(context);
+  }
+
+  final TextStyle button;
+  final TextStyle largeTitle;
+  final TextStyle small;
+  final TextStyle smallBold;
+  final TextStyle subtitle;
+  final TextStyle superSmall;
+  final TextStyle superSmallMedium;
+  final TextStyle text;
+  final TextStyle textMedium;
+  final TextStyle title;
+
+  const AppTextTheme._({
+    required this.largeTitle,
+    required this.title,
+    required this.subtitle,
+    required this.textMedium,
+    required this.text,
+    required this.smallBold,
+    required this.small,
+    required this.superSmallMedium,
+    required this.superSmall,
+    required this.button,
+  });
+
+  /// {@macro app_text_theme.class}
+  AppTextTheme.base()
+    : largeTitle = AppTextStyle.largeTitle.value,
+      title = AppTextStyle.title.value,
+      subtitle = AppTextStyle.subtitle.value,
+      textMedium = AppTextStyle.textMedium.value,
+      text = AppTextStyle.text.value,
+      smallBold = AppTextStyle.smallBold.value,
+      small = AppTextStyle.small.value,
+      superSmallMedium = AppTextStyle.superSmallMedium.value,
+      superSmall = AppTextStyle.superSmall.value,
+      button = AppTextStyle.button.value;
+
+  /// @nodoc.
+  @override
+  AppTextTheme copyWith({
+    TextStyle? largeTitle,
+    TextStyle? title,
+    TextStyle? subtitle,
+    TextStyle? textMedium,
+    TextStyle? text,
+    TextStyle? smallBold,
+    TextStyle? small,
+    TextStyle? superSmallMedium,
+    TextStyle? superSmall,
+    TextStyle? button,
+  }) {
+    return AppTextTheme._(
+      largeTitle: largeTitle ?? this.largeTitle,
+      title: title ?? this.title,
+      subtitle: subtitle ?? this.subtitle,
+      textMedium: textMedium ?? this.textMedium,
+      text: text ?? this.text,
+      smallBold: smallBold ?? this.smallBold,
+      small: small ?? this.small,
+      superSmallMedium: superSmallMedium ?? this.superSmallMedium,
+      superSmall: superSmall ?? this.superSmall,
+      button: button ?? this.button,
+    );
+  }
+
+  @override
+  ThemeExtension<AppTextTheme> lerp(ThemeExtension<AppTextTheme>? other, double t) {
+    if (other is! AppTextTheme) {
+      return this;
+    }
+
+    return AppTextTheme._(
+      largeTitle: TextStyle.lerp(largeTitle, other.largeTitle, t)!,
+      title: TextStyle.lerp(title, other.title, t)!,
+      subtitle: TextStyle.lerp(subtitle, other.subtitle, t)!,
+      textMedium: TextStyle.lerp(textMedium, other.textMedium, t)!,
+      text: TextStyle.lerp(text, other.text, t)!,
+      smallBold: TextStyle.lerp(smallBold, other.smallBold, t)!,
+      small: TextStyle.lerp(small, other.small, t)!,
+      superSmallMedium: TextStyle.lerp(superSmallMedium, other.superSmallMedium, t)!,
+      superSmall: TextStyle.lerp(superSmall, other.superSmall, t)!,
+      button: TextStyle.lerp(button, other.button, t)!,
+    );
+  }
+}
+
+Never _throwThemeNotFound(BuildContext context) => throw Exception('$AppTextTheme not found in $context');
+
+
