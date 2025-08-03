@@ -32,10 +32,8 @@ final class FavoritesRepository implements IFavoritesRepository {
     final index = favorites.indexWhere((element) => element.name == place.name);
 
     if (index == -1) {
-      // Добавляем в избранное
       _favoritesListenable.value = [...favorites, place];
     } else {
-      // Удаляем из избранного
       final newFavorites = [...favorites]..removeAt(index);
       _favoritesListenable.value = newFavorites;
     }
@@ -47,14 +45,6 @@ final class FavoritesRepository implements IFavoritesRepository {
     final newFavorites = favorites.where((element) => element.name != place.name).toList();
     _favoritesListenable.value = newFavorites;
   }
-
-  // @override
-  // Future<void> removeFavorite(PlaceEntity place) async {
-  //   final favorites = _favoritesListenable.value;
-  //   final newFavorites =
-  //       favorites.where((element) => element.id != place.id).toList();
-  //   _favoritesListenable.value = newFavorites;
-  // }
 
   @override
   bool isFavorite(PlaceEntity place) {

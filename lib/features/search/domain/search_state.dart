@@ -1,4 +1,3 @@
-// lib/features/search/domain/search_state.dart
 import 'package:flutter/foundation.dart';
 import 'package:surf_places/features/common/domain/enitities/place_entity.dart';
 

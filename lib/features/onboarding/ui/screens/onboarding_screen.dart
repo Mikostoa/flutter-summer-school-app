@@ -22,7 +22,7 @@ class OnboardingScreen extends StatelessWidget {
     final textTheme = AppTextTheme.of(context);
 
     return Scaffold(
-      backgroundColor: colorTheme.scaffold, // Используем цвет фона из темы
+      backgroundColor: colorTheme.scaffold,
       body: SafeArea(
         child: Stack(
           children: [
@@ -47,14 +47,14 @@ class OnboardingScreen extends StatelessWidget {
                 ),
               ],
             ),
-            // Кнопка "Пропустить"
+
             Positioned(
               top: 16,
               right: 16,
               child: ValueListenableBuilder<bool>(
                 valueListenable: wm.isLastPageNotifier,
                 builder: (context, isLastPage, child) {
-                  // Скрываем кнопку "Пропустить" на последней странице
+                 
                   return Visibility(
                     visible: !isLastPage,
                     child: TextButtonWidget(
@@ -131,30 +131,24 @@ class _OnboardingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorTheme = AppColorTheme.of(context);
-    final textTheme = AppTextTheme.of(context);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Изображение SVG
           SvgPictureWidget(
             imageAsset,
-            height: 104, // Установите желаемую высоту
-            // width: double.infinity, // Растягиваем по ширине
-            fit: BoxFit.contain, // Или BoxFit.fitWidth
+            height: 104,
+            fit: BoxFit.contain, 
           ),
           const SizedBox(height: 48),
-          // Заголовок
           Text(
             title,
             textAlign: TextAlign.center,
             style: AppTextStyle.title.value,
           ),
           const SizedBox(height: 16),
-          // Описание
           Text(
             description,
             textAlign: TextAlign.center,
@@ -172,7 +166,6 @@ class _DotsIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Получаем WM через контекст, чтобы получить доступ к текущей странице
     final wm = context.watch<IOnboardingWM>();
     final colorTheme = AppColorTheme.of(context);
 
@@ -182,16 +175,15 @@ class _DotsIndicator extends StatelessWidget {
         return ValueListenableBuilder<int>(
           valueListenable: wm.currentPageNotifier,
           builder: (context, currentPage, child) {
-            // Скрываем кнопку "Пропустить" на последней странице
             return AnimatedContainer(
               duration: const Duration(
                 milliseconds: 300,
-              ), // Длительность анимации
-              curve: Curves.easeInOut, // Тип анимационной кривой
+              ), 
+              curve: Curves.easeInOut, 
               width:
                   currentPage == index
                       ? 24
-                      : 8, // Ширина активной/неактивной точки
+                      : 8,
               height: 8,
               margin: const EdgeInsets.symmetric(horizontal: 4),
               decoration: BoxDecoration(
@@ -199,8 +191,8 @@ class _DotsIndicator extends StatelessWidget {
                 color:
                     currentPage == index
                         ? colorTheme
-                            .accent // Цвет активной точки
-                        : colorTheme.inactive, // Цвет неактивной точки
+                            .accent 
+                        : colorTheme.inactive,
               ),
             );
           },

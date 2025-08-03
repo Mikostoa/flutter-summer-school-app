@@ -1,4 +1,3 @@
-// lib/features/search/ui/screens/search_wm.dart
 import 'package:flutter/material.dart';
 import 'package:surf_places/features/search/domain/search_state.dart';
 import 'package:surf_places/features/search/ui/screens/search_model.dart';

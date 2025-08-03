@@ -1,4 +1,3 @@
-// lib/features/tabs_screen/tabs_screen.dart
 import 'package:flutter/material.dart';
 import 'package:surf_places/assets/strings/app_strings.dart';
 import 'package:surf_places/features/favorites/ui/screens/favorites_screen.dart';

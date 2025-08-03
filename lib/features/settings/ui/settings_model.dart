@@ -1,4 +1,3 @@
-// lib/features/settings/data/settings_model.dart
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

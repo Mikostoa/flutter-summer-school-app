@@ -1,4 +1,3 @@
-// lib/features/search/domain/repositories/i_search_repository.dart
 import 'package:surf_places/core/domain/entities/result/request_operation.dart';
 import 'package:surf_places/features/common/domain/enitities/place_entity.dart';
 

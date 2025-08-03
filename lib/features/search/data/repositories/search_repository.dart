@@ -1,4 +1,3 @@
-// lib/features/search/data/repositories/search_repository.dart
 import 'package:surf_places/api/service/api_client.dart';
 import 'package:surf_places/core/data/repositories/base_repository.dart';
 import 'package:surf_places/core/domain/entities/result/request_operation.dart';
@@ -19,7 +18,6 @@ final class SearchRepository extends BaseRepository implements ISearchRepository
   @override
   RequestOperation<List<PlaceEntity>> searchPlaces(String query) {
     return makeApiCall(() async {
-      // В реальном приложении здесь будет вызов API с фильтрацией
       final allPlaces = await _apiClient.getPlaces();
       final filteredPlaces = allPlaces.where((place) {
         return place.name.toLowerCase().contains(query.toLowerCase()) ||

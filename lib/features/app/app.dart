@@ -1,9 +1,8 @@
-// lib/features/app/app.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:surf_places/features/app/app_home.dart';
 import 'package:surf_places/features/app/di/app_dependencies.dart';
-import 'package:surf_places/features/settings/model/settings_model.dart';
+import 'package:surf_places/features/settings/ui/settings_model.dart';
 import 'package:surf_places/uikit/themes/app_theme_data.dart';
 
 class App extends StatelessWidget {

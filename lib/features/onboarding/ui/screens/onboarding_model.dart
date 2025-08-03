@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Модель для экрана онбоардинга.
 class OnboardingModel implements IOnboardingModel {
   static const String prefsKey = 'onboarding_completed';
 
@@ -23,7 +22,7 @@ class OnboardingModel implements IOnboardingModel {
   @override
   void setCurrentPage(int page) {
     _currentPageNotifier.value = page;
-    _isLastPageNotifier.value = page == 2; // Предполагаем 3 страницы (0, 1, 2)
+    _isLastPageNotifier.value = page == 2; 
   }
 
   @override

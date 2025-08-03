@@ -144,7 +144,6 @@ class _FavoritePlaceCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Изображение места
                 Stack(
                   children: [
                     SizedBox(
@@ -170,7 +169,6 @@ class _FavoritePlaceCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                // Контент карточки
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -198,14 +196,12 @@ class _FavoritePlaceCard extends StatelessWidget {
                 ),
               ],
             ),
-            // Область для тапа (переход в детали)
             Positioned.fill(
               child: Material(
                 type: MaterialType.transparency,
                 child: InkWell(onTap: onTap),
               ),
             ),
-            // Кнопка "Поделиться"
             Positioned(
               top: 8,
               right: 8,

@@ -1,8 +1,7 @@
-// lib/features/settings/ui/settings_wm.dart
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:surf_places/features/onboarding/ui/screens/onboarding_screen_builder.dart';
-import 'package:surf_places/features/settings/model/settings_model.dart';
+import 'package:surf_places/features/settings/ui/settings_model.dart';
 
 abstract class ISettingsWM {
   ValueListenable<bool> get isDarkThemeNotifier;
@@ -30,6 +29,6 @@ class SettingsWM implements ISettingsWM {
     //     const SnackBar(content: Text('Onboarding has been reset')),
     //   );
     // });
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) => OnboardingScreenBuilder()));
+    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => OnboardingScreenBuilder()));
   }
 }

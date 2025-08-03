@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:surf_places/features/onboarding/ui/screens/onboarding_model.dart'; // Импортируем модель
+import 'package:surf_places/core/domain/entities/result/result.dart';
+import 'package:surf_places/features/onboarding/domain/onboarding_state.dart';
+import 'package:surf_places/features/onboarding/domain/repositories/i_onboarding_repository.dart';
 import 'package:surf_places/features/onboarding/ui/screens/onboarding_screen_builder.dart';
-import 'package:surf_places/features/tabs_screen/tabs_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:surf_places/features/splash/ui/screens/splash_screen.dart';
 
 /// Виджет, определяющий начальный экран приложения.
 class AppHome extends StatefulWidget {
@@ -13,52 +15,54 @@ class AppHome extends StatefulWidget {
 }
 
 class _AppHomeState extends State<AppHome> {
-  late Future<bool> _onboardingCompletedFuture;
+  late Future<OnboardingCheckState> _onboardingCheckFuture;
 
   @override
   void initState() {
     super.initState();
-    // Инициируем проверку завершения онбоардинга
-    _onboardingCompletedFuture = _checkOnboarding();
+    _onboardingCheckFuture = _checkOnboarding();
   }
 
-  /// Проверяет, был ли онбоардинг завершен.
-  Future<bool> _checkOnboarding() async {
-    // Создаем временную модель для проверки
-    // В идеале это должно делаться через отдельный сервис или репозиторий
-    // Но для простоты создаем экземпляр модели здесь
-    final model = OnboardingModel();
-    final isCompleted = await model.isOnboardingCompleted();
-    model.dispose(); // Не забываем освободить ресурсы
-    return isCompleted;
+  Future<OnboardingCheckState> _checkOnboarding() async {
+    final repository = context.read<IOnboardingRepository>();
+    final result = await repository.isOnboardingCompleted();
+
+    return switch (result) {
+      ResultOk(:final data) => OnboardingCheckStateData(data),
+      ResultFailed(:final error) => OnboardingCheckStateFailure(error),
+    };
   }
+
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<bool>(
-      future: _onboardingCompletedFuture,
+    return FutureBuilder<OnboardingCheckState>(
+      future: _onboardingCheckFuture,
       builder: (context, snapshot) {
-        // Пока проверяется состояние онбоардинга, показываем загрузку или пустой контейнер
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          // Можно показать SplashScreen или просто пустой контейнер
-          return const Scaffold(body: Center(child: CircularProgressIndicator()));
-        } else if (snapshot.hasError) {
-            // Обработка ошибки, если она возникла при проверке
-            // Можно залогировать и показать экран по умолчанию или онбоардинг
-            // Пока просто покажем онбоардинг
-            return const OnboardingScreenBuilder();
-        } else {
-          // Если проверка завершена успешно
-          final isCompleted = snapshot.data ?? false;
-          if (isCompleted) {
-            // Онбоардинг завершен, показываем основной экран
-            return const TabsScreen();
-          } else {
-            // Онбоардинг не завершен, показываем онбоардинг
-            return const OnboardingScreenBuilder();
-          }
-        }
+        final state = snapshot.data;
+
+        return switch (state) {
+          OnboardingCheckStateLoading() => const _LoadingState(),
+          OnboardingCheckStateFailure() => const OnboardingScreenBuilder(), 
+          OnboardingCheckStateData(isOnboardingCompleted: final isCompleted) =>
+            isCompleted ? const SplashScreen() : const OnboardingScreenBuilder(),
+          _ => const _LoadingState(), 
+        };
       },
+    );
+  }
+}
+
+/// Виджет состояния загрузки
+class _LoadingState extends StatelessWidget {
+  const _LoadingState();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(),
+      ),
     );
   }
 }

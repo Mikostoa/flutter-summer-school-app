@@ -1,9 +1,7 @@
-// lib/features/search/ui/screens/search_model.dart
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:surf_places/core/domain/entities/result/result.dart';
-import 'package:surf_places/features/common/domain/enitities/place_entity.dart';
 import 'package:surf_places/features/search/domain/repositories/i_search_repository.dart';
 import 'package:surf_places/features/search/domain/search_state.dart';
 
@@ -21,7 +19,6 @@ class SearchModel implements ISearchModel {
 
   @override
   void search(String query) {
-    // Отменяем предыдущий таймер, если он есть
     _searchTimer?.cancel();
 
     if (query.length < 3) {
@@ -31,12 +28,11 @@ class SearchModel implements ISearchModel {
 
     _state.value = const SearchStateLoading();
 
-    // Запускаем новый таймер
     _searchTimer = Timer(const Duration(milliseconds: 500), () async {
       final result = await _searchRepository.searchPlaces(query);
 
       switch (result) {
-        case ResultOk(:final data as List<PlaceEntity>):
+        case ResultOk(:final data):
           _state.value =
               data.isEmpty
                   ? const SearchStateEmpty()

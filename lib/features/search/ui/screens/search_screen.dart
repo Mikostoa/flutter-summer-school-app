@@ -1,4 +1,3 @@
-// lib/features/search/ui/screens/search_screen.dart
 import 'package:flutter/material.dart';
 import 'package:surf_places/assets/images/app_svg_icons.dart';
 import 'package:surf_places/assets/strings/app_strings.dart';

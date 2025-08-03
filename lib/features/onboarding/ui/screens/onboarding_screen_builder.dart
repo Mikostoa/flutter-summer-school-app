@@ -11,7 +11,7 @@ class OnboardingScreenBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: OnboardingDependencies.providers(context), // Передаем context
+      providers: OnboardingDependencies.providers(context),
       child: Builder(
         builder: (context) => OnboardingScreen(wm: context.read<IOnboardingWM>()),
       ),

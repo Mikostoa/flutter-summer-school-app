@@ -1,4 +1,3 @@
-// lib/features/search/ui/search_dependencies.dart
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:surf_places/api/service/api_client.dart';

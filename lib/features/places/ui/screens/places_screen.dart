@@ -26,7 +26,9 @@ class PlacesScreen extends StatelessWidget {
             headerSliverBuilder:
                 (_, __) => [
                   SliverAppBar(
-                    title: Center(child: const Text(AppStrings.placesScreenAppBarTitle)),
+                    title: Center(
+                      child: const Text(AppStrings.placesScreenAppBarTitle),
+                    ),
                     floating: true,
                     snap: true,
                   ),
@@ -59,33 +61,21 @@ class PlacesScreen extends StatelessWidget {
                               AppSvgIcons.icFilter,
                               color: colorTheme.accent,
                             ),
-                            onPressed: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder:
-                                      (context) => const SearchScreenBuilder(),
-                                ),
-                              );
-                            },
+                            onPressed: () {},
                           ),
                         ),
                         Positioned(
                           left: 0,
                           child: Row(
                             children: [
-                              IconButton(
-                                icon: SvgPictureWidget(AppSvgIcons.icSearch),
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder:
-                                          (context) =>
-                                              const SearchScreenBuilder(),
-                                    ),
-                                  );
-                                },
+                              Container(
+                                margin: EdgeInsets.only(left: 8),
+                                child: SvgPictureWidget(AppSvgIcons.icSearch),
                               ),
-                              Container(child: Text(AppStrings.searchHint)),
+                              Container(
+                                margin: EdgeInsets.only(left: 8),
+                                child: Text(AppStrings.searchHint),
+                              ),
                             ],
                           ),
                         ),
