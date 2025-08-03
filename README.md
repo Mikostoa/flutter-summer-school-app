@@ -19,3 +19,4 @@
 - **Domain слой**: бизнес-логика, сущности
 - **Presentation слой**: UI, экраны, виджеты
 
+Ссылка на видео демонстрации фитч: https://disk.yandex.ru/i/rKZUrH0Xgrawug
